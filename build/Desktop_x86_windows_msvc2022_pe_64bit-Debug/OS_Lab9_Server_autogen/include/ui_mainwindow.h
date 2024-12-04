@@ -35,8 +35,6 @@ public:
     QStackedWidget *stackedWidget;
     QWidget *homePage;
     QVBoxLayout *verticalLayout_2;
-    QWidget *widget;
-    QVBoxLayout *verticalLayout_3;
     QSpacerItem *verticalSpacer_2;
     QLabel *label_6;
     QLabel *label;
@@ -59,11 +57,11 @@ public:
     QPushButton *startSessionPushButton;
     QWidget *createIdeaPage;
     QVBoxLayout *verticalLayout_7;
-    QHBoxLayout *horizontalLayout_5;
+    QHBoxLayout *headerCrIdea;
     QSpacerItem *horizontalSpacer_4;
-    QLabel *timeCreateIdeaLabel;
-    QLabel *label_13;
-    QWidget *widget_3;
+    QLabel *timerCrIdeaLabel;
+    QLabel *timeImgCrIdea;
+    QWidget *bodyWidget;
     QVBoxLayout *verticalLayout_6;
     QLabel *label_2;
     QScrollArea *scrollArea;
@@ -133,35 +131,20 @@ public:
         verticalLayout_2 = new QVBoxLayout(homePage);
         verticalLayout_2->setSpacing(0);
         verticalLayout_2->setObjectName("verticalLayout_2");
-        verticalLayout_2->setContentsMargins(0, 0, 0, 0);
-        widget = new QWidget(homePage);
-        widget->setObjectName("widget");
-        QSizePolicy sizePolicy(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(widget->sizePolicy().hasHeightForWidth());
-        widget->setSizePolicy(sizePolicy);
-        widget->setMinimumSize(QSize(500, 600));
-        widget->setAutoFillBackground(false);
-        widget->setStyleSheet(QString::fromUtf8("background: transparent;\n"
-""));
-        verticalLayout_3 = new QVBoxLayout(widget);
-        verticalLayout_3->setSpacing(4);
-        verticalLayout_3->setObjectName("verticalLayout_3");
-        verticalLayout_3->setContentsMargins(100, 0, 100, 5);
+        verticalLayout_2->setContentsMargins(100, 0, 100, 0);
         verticalSpacer_2 = new QSpacerItem(20, 80, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Preferred);
 
-        verticalLayout_3->addItem(verticalSpacer_2);
+        verticalLayout_2->addItem(verticalSpacer_2);
 
-        label_6 = new QLabel(widget);
+        label_6 = new QLabel(homePage);
         label_6->setObjectName("label_6");
         label_6->setStyleSheet(QString::fromUtf8("image: url(:/image/images/logo.png);\n"
 "\n"
 "    font-size: 100px;  "));
 
-        verticalLayout_3->addWidget(label_6);
+        verticalLayout_2->addWidget(label_6);
 
-        label = new QLabel(widget);
+        label = new QLabel(homePage);
         label->setObjectName("label");
         QFont font;
         font.setFamilies({QString::fromUtf8("Julius Sans One")});
@@ -171,15 +154,15 @@ public:
 "background: transparent;\n"
 ""));
 
-        verticalLayout_3->addWidget(label);
+        verticalLayout_2->addWidget(label);
 
-        topicLineEdit = new QLineEdit(widget);
+        topicLineEdit = new QLineEdit(homePage);
         topicLineEdit->setObjectName("topicLineEdit");
-        QSizePolicy sizePolicy1(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(topicLineEdit->sizePolicy().hasHeightForWidth());
-        topicLineEdit->setSizePolicy(sizePolicy1);
+        QSizePolicy sizePolicy(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(topicLineEdit->sizePolicy().hasHeightForWidth());
+        topicLineEdit->setSizePolicy(sizePolicy);
         topicLineEdit->setMinimumSize(QSize(300, 0));
         QFont font1;
         font1.setPointSize(20);
@@ -191,9 +174,9 @@ public:
 "width: 150px;                      /* \320\250\320\270\321\200\320\270\320\275\320\260 \320\272\320\275\320\276\320\277\320\272\320\270 */\n"
 "height: 50px;  "));
 
-        verticalLayout_3->addWidget(topicLineEdit);
+        verticalLayout_2->addWidget(topicLineEdit);
 
-        label_9 = new QLabel(widget);
+        label_9 = new QLabel(homePage);
         label_9->setObjectName("label_9");
         label_9->setFont(font);
         label_9->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
@@ -201,15 +184,15 @@ public:
 "background: transparent;\n"
 ""));
 
-        verticalLayout_3->addWidget(label_9);
+        verticalLayout_2->addWidget(label_9);
 
-        setTimeEdit = new QTimeEdit(widget);
+        setTimeEdit = new QTimeEdit(homePage);
         setTimeEdit->setObjectName("setTimeEdit");
-        QSizePolicy sizePolicy2(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(setTimeEdit->sizePolicy().hasHeightForWidth());
-        setTimeEdit->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy1(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(setTimeEdit->sizePolicy().hasHeightForWidth());
+        setTimeEdit->setSizePolicy(sizePolicy1);
         setTimeEdit->setMinimumSize(QSize(200, 0));
         QFont font2;
         font2.setPointSize(16);
@@ -223,19 +206,19 @@ public:
         setTimeEdit->setCurrentSection(QDateTimeEdit::Section::MinuteSection);
         setTimeEdit->setTime(QTime(0, 3, 0));
 
-        verticalLayout_3->addWidget(setTimeEdit);
+        verticalLayout_2->addWidget(setTimeEdit);
 
         verticalSpacer_3 = new QSpacerItem(20, 20, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Fixed);
 
-        verticalLayout_3->addItem(verticalSpacer_3);
+        verticalLayout_2->addItem(verticalSpacer_3);
 
         horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->setObjectName("horizontalLayout_2");
         horizontalLayout_2->setContentsMargins(-1, 0, -1, -1);
-        createRoomButton = new QPushButton(widget);
+        createRoomButton = new QPushButton(homePage);
         createRoomButton->setObjectName("createRoomButton");
-        sizePolicy2.setHeightForWidth(createRoomButton->sizePolicy().hasHeightForWidth());
-        createRoomButton->setSizePolicy(sizePolicy2);
+        sizePolicy1.setHeightForWidth(createRoomButton->sizePolicy().hasHeightForWidth());
+        createRoomButton->setSizePolicy(sizePolicy1);
         createRoomButton->setMinimumSize(QSize(230, 0));
         createRoomButton->setFont(font);
         createRoomButton->setCursor(QCursor(Qt::PointingHandCursor));
@@ -266,14 +249,11 @@ public:
         horizontalLayout_2->addWidget(createRoomButton);
 
 
-        verticalLayout_3->addLayout(horizontalLayout_2);
+        verticalLayout_2->addLayout(horizontalLayout_2);
 
         verticalSpacer_5 = new QSpacerItem(20, 150, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Preferred);
 
-        verticalLayout_3->addItem(verticalSpacer_5);
-
-
-        verticalLayout_2->addWidget(widget);
+        verticalLayout_2->addItem(verticalSpacer_5);
 
         stackedWidget->addWidget(homePage);
         hamstersPage = new QWidget();
@@ -294,8 +274,8 @@ public:
         verticalLayout_5->setContentsMargins(20, 15, 20, 0);
         label_11 = new QLabel(widget_2);
         label_11->setObjectName("label_11");
-        sizePolicy1.setHeightForWidth(label_11->sizePolicy().hasHeightForWidth());
-        label_11->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(label_11->sizePolicy().hasHeightForWidth());
+        label_11->setSizePolicy(sizePolicy);
         label_11->setMinimumSize(QSize(0, 0));
         label_11->setMaximumSize(QSize(16777215, 80));
         QFont font3;
@@ -345,8 +325,8 @@ public:
 
         startSessionPushButton = new QPushButton(widget_2);
         startSessionPushButton->setObjectName("startSessionPushButton");
-        sizePolicy2.setHeightForWidth(startSessionPushButton->sizePolicy().hasHeightForWidth());
-        startSessionPushButton->setSizePolicy(sizePolicy2);
+        sizePolicy1.setHeightForWidth(startSessionPushButton->sizePolicy().hasHeightForWidth());
+        startSessionPushButton->setSizePolicy(sizePolicy1);
         startSessionPushButton->setMinimumSize(QSize(230, 0));
         startSessionPushButton->setFont(font);
         startSessionPushButton->setCursor(QCursor(Qt::PointingHandCursor));
@@ -390,51 +370,51 @@ public:
         verticalLayout_7->setSpacing(0);
         verticalLayout_7->setObjectName("verticalLayout_7");
         verticalLayout_7->setContentsMargins(0, 0, 0, 0);
-        horizontalLayout_5 = new QHBoxLayout();
-        horizontalLayout_5->setSpacing(0);
-        horizontalLayout_5->setObjectName("horizontalLayout_5");
-        horizontalLayout_5->setContentsMargins(0, 20, 20, 0);
+        headerCrIdea = new QHBoxLayout();
+        headerCrIdea->setSpacing(0);
+        headerCrIdea->setObjectName("headerCrIdea");
+        headerCrIdea->setContentsMargins(0, 20, 20, 0);
         horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
 
-        horizontalLayout_5->addItem(horizontalSpacer_4);
+        headerCrIdea->addItem(horizontalSpacer_4);
 
-        timeCreateIdeaLabel = new QLabel(createIdeaPage);
-        timeCreateIdeaLabel->setObjectName("timeCreateIdeaLabel");
-        QSizePolicy sizePolicy3(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Preferred);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(timeCreateIdeaLabel->sizePolicy().hasHeightForWidth());
-        timeCreateIdeaLabel->setSizePolicy(sizePolicy3);
-        timeCreateIdeaLabel->setMinimumSize(QSize(100, 0));
-        timeCreateIdeaLabel->setFont(font);
-        timeCreateIdeaLabel->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
+        timerCrIdeaLabel = new QLabel(createIdeaPage);
+        timerCrIdeaLabel->setObjectName("timerCrIdeaLabel");
+        QSizePolicy sizePolicy2(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Preferred);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(timerCrIdeaLabel->sizePolicy().hasHeightForWidth());
+        timerCrIdeaLabel->setSizePolicy(sizePolicy2);
+        timerCrIdeaLabel->setMinimumSize(QSize(100, 0));
+        timerCrIdeaLabel->setFont(font);
+        timerCrIdeaLabel->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
 "font-size: 30px;  \n"
 "background: transparent;"));
 
-        horizontalLayout_5->addWidget(timeCreateIdeaLabel);
+        headerCrIdea->addWidget(timerCrIdeaLabel);
 
-        label_13 = new QLabel(createIdeaPage);
-        label_13->setObjectName("label_13");
-        label_13->setMinimumSize(QSize(30, 0));
-        label_13->setStyleSheet(QString::fromUtf8("image: url(:/image/images/clock.png);\n"
+        timeImgCrIdea = new QLabel(createIdeaPage);
+        timeImgCrIdea->setObjectName("timeImgCrIdea");
+        timeImgCrIdea->setMinimumSize(QSize(30, 0));
+        timeImgCrIdea->setStyleSheet(QString::fromUtf8("image: url(:/image/images/clock.png);\n"
 "background: transparent;\n"
 "font-size: 20px;\n"
 ""));
 
-        horizontalLayout_5->addWidget(label_13);
+        headerCrIdea->addWidget(timeImgCrIdea);
 
 
-        verticalLayout_7->addLayout(horizontalLayout_5);
+        verticalLayout_7->addLayout(headerCrIdea);
 
-        widget_3 = new QWidget(createIdeaPage);
-        widget_3->setObjectName("widget_3");
-        widget_3->setStyleSheet(QString::fromUtf8("background: transparent;\n"
+        bodyWidget = new QWidget(createIdeaPage);
+        bodyWidget->setObjectName("bodyWidget");
+        bodyWidget->setStyleSheet(QString::fromUtf8("background: transparent;\n"
 ""));
-        verticalLayout_6 = new QVBoxLayout(widget_3);
+        verticalLayout_6 = new QVBoxLayout(bodyWidget);
         verticalLayout_6->setSpacing(0);
         verticalLayout_6->setObjectName("verticalLayout_6");
         verticalLayout_6->setContentsMargins(20, 0, 20, 0);
-        label_2 = new QLabel(widget_3);
+        label_2 = new QLabel(bodyWidget);
         label_2->setObjectName("label_2");
         label_2->setFont(font);
         label_2->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
@@ -445,13 +425,13 @@ public:
 
         verticalLayout_6->addWidget(label_2);
 
-        scrollArea = new QScrollArea(widget_3);
+        scrollArea = new QScrollArea(bodyWidget);
         scrollArea->setObjectName("scrollArea");
         scrollArea->setStyleSheet(QString::fromUtf8("background-color: rgba(255, 255, 255, 0.8); "));
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName("scrollAreaWidgetContents");
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 41, 16));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 758, 469));
         scrollAreaWidgetContents->setStyleSheet(QString::fromUtf8("background-color: rgba(255, 255, 255, 0.8); "));
         scrollArea->setWidget(scrollAreaWidgetContents);
 
@@ -465,10 +445,10 @@ public:
 
         horizontalLayout_6->addItem(horizontalSpacer_2);
 
-        EndSessionButton = new QPushButton(widget_3);
+        EndSessionButton = new QPushButton(bodyWidget);
         EndSessionButton->setObjectName("EndSessionButton");
-        sizePolicy2.setHeightForWidth(EndSessionButton->sizePolicy().hasHeightForWidth());
-        EndSessionButton->setSizePolicy(sizePolicy2);
+        sizePolicy1.setHeightForWidth(EndSessionButton->sizePolicy().hasHeightForWidth());
+        EndSessionButton->setSizePolicy(sizePolicy1);
         EndSessionButton->setMinimumSize(QSize(230, 0));
         EndSessionButton->setFont(font);
         EndSessionButton->setCursor(QCursor(Qt::PointingHandCursor));
@@ -503,7 +483,7 @@ public:
         verticalLayout_6->addLayout(horizontalLayout_6);
 
 
-        verticalLayout_7->addWidget(widget_3);
+        verticalLayout_7->addWidget(bodyWidget);
 
         stackedWidget->addWidget(createIdeaPage);
         votePage = new QWidget();
@@ -523,8 +503,8 @@ public:
 
         timeCreateIdeaLabel_2 = new QLabel(votePage);
         timeCreateIdeaLabel_2->setObjectName("timeCreateIdeaLabel_2");
-        sizePolicy3.setHeightForWidth(timeCreateIdeaLabel_2->sizePolicy().hasHeightForWidth());
-        timeCreateIdeaLabel_2->setSizePolicy(sizePolicy3);
+        sizePolicy2.setHeightForWidth(timeCreateIdeaLabel_2->sizePolicy().hasHeightForWidth());
+        timeCreateIdeaLabel_2->setSizePolicy(sizePolicy2);
         timeCreateIdeaLabel_2->setMinimumSize(QSize(100, 0));
         timeCreateIdeaLabel_2->setFont(font);
         timeCreateIdeaLabel_2->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
@@ -618,8 +598,8 @@ public:
 
         label_22 = new QLabel(podiumPage);
         label_22->setObjectName("label_22");
-        sizePolicy1.setHeightForWidth(label_22->sizePolicy().hasHeightForWidth());
-        label_22->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(label_22->sizePolicy().hasHeightForWidth());
+        label_22->setSizePolicy(sizePolicy);
         label_22->setMinimumSize(QSize(0, 0));
         label_22->setMaximumSize(QSize(16777215, 80));
         label_22->setFont(font3);
@@ -637,8 +617,8 @@ public:
 
         label_23 = new QLabel(podiumPage);
         label_23->setObjectName("label_23");
-        sizePolicy1.setHeightForWidth(label_23->sizePolicy().hasHeightForWidth());
-        label_23->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(label_23->sizePolicy().hasHeightForWidth());
+        label_23->setSizePolicy(sizePolicy);
         label_23->setFont(font);
         label_23->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
 "font-size: 30px;  \n"
@@ -650,8 +630,8 @@ public:
 
         label_24 = new QLabel(podiumPage);
         label_24->setObjectName("label_24");
-        sizePolicy1.setHeightForWidth(label_24->sizePolicy().hasHeightForWidth());
-        label_24->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(label_24->sizePolicy().hasHeightForWidth());
+        label_24->setSizePolicy(sizePolicy);
         label_24->setFont(font);
         label_24->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
 "font-size: 30px;  \n"
@@ -667,8 +647,11 @@ public:
 
         widget_14 = new QWidget(podiumPage);
         widget_14->setObjectName("widget_14");
-        sizePolicy.setHeightForWidth(widget_14->sizePolicy().hasHeightForWidth());
-        widget_14->setSizePolicy(sizePolicy);
+        QSizePolicy sizePolicy3(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(widget_14->sizePolicy().hasHeightForWidth());
+        widget_14->setSizePolicy(sizePolicy3);
         widget_14->setMinimumSize(QSize(0, 300));
         widget_14->setStyleSheet(QString::fromUtf8("background: transparent;"));
         horizontalLayout_17 = new QHBoxLayout(widget_14);
@@ -687,8 +670,8 @@ public:
 
         label_25 = new QLabel(widget_14);
         label_25->setObjectName("label_25");
-        sizePolicy1.setHeightForWidth(label_25->sizePolicy().hasHeightForWidth());
-        label_25->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(label_25->sizePolicy().hasHeightForWidth());
+        label_25->setSizePolicy(sizePolicy);
         label_25->setMinimumSize(QSize(200, 0));
         label_25->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
 "font-size: 20px;  \n"
@@ -701,8 +684,8 @@ public:
 
         label_26 = new QLabel(widget_14);
         label_26->setObjectName("label_26");
-        sizePolicy1.setHeightForWidth(label_26->sizePolicy().hasHeightForWidth());
-        label_26->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(label_26->sizePolicy().hasHeightForWidth());
+        label_26->setSizePolicy(sizePolicy);
         label_26->setMinimumSize(QSize(120, 135));
         label_26->setFont(font2);
         label_26->setStyleSheet(QString::fromUtf8("image: url(:/image/images/secondPlacePodium.png);"));
@@ -724,8 +707,8 @@ public:
 
         label_27 = new QLabel(widget_14);
         label_27->setObjectName("label_27");
-        sizePolicy1.setHeightForWidth(label_27->sizePolicy().hasHeightForWidth());
-        label_27->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(label_27->sizePolicy().hasHeightForWidth());
+        label_27->setSizePolicy(sizePolicy);
         label_27->setMinimumSize(QSize(200, 0));
         label_27->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
 "font-size: 20px;  \n"
@@ -738,8 +721,8 @@ public:
 
         label_28 = new QLabel(widget_14);
         label_28->setObjectName("label_28");
-        sizePolicy1.setHeightForWidth(label_28->sizePolicy().hasHeightForWidth());
-        label_28->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(label_28->sizePolicy().hasHeightForWidth());
+        label_28->setSizePolicy(sizePolicy);
         label_28->setMinimumSize(QSize(120, 165));
         label_28->setStyleSheet(QString::fromUtf8("image: url(:/image/images/firstPlacePodium.png);"));
 
@@ -760,8 +743,8 @@ public:
 
         label_29 = new QLabel(widget_14);
         label_29->setObjectName("label_29");
-        sizePolicy1.setHeightForWidth(label_29->sizePolicy().hasHeightForWidth());
-        label_29->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(label_29->sizePolicy().hasHeightForWidth());
+        label_29->setSizePolicy(sizePolicy);
         label_29->setMinimumSize(QSize(200, 0));
         label_29->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
 "font-size: 20px;  \n"
@@ -774,8 +757,8 @@ public:
 
         label_30 = new QLabel(widget_14);
         label_30->setObjectName("label_30");
-        sizePolicy1.setHeightForWidth(label_30->sizePolicy().hasHeightForWidth());
-        label_30->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(label_30->sizePolicy().hasHeightForWidth());
+        label_30->setSizePolicy(sizePolicy);
         label_30->setMinimumSize(QSize(120, 105));
         label_30->setFont(font2);
         label_30->setStyleSheet(QString::fromUtf8("image: url(:/image/images/thirdPlacePodium.png);\n"
@@ -802,8 +785,8 @@ public:
 
         homeButton = new QPushButton(podiumPage);
         homeButton->setObjectName("homeButton");
-        sizePolicy2.setHeightForWidth(homeButton->sizePolicy().hasHeightForWidth());
-        homeButton->setSizePolicy(sizePolicy2);
+        sizePolicy1.setHeightForWidth(homeButton->sizePolicy().hasHeightForWidth());
+        homeButton->setSizePolicy(sizePolicy1);
         homeButton->setMinimumSize(QSize(150, 0));
         homeButton->setFont(font);
         homeButton->setCursor(QCursor(Qt::PointingHandCursor));
@@ -844,7 +827,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        stackedWidget->setCurrentIndex(4);
+        stackedWidget->setCurrentIndex(3);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -864,8 +847,8 @@ public:
         label_11->setText(QString());
         label_3->setText(QCoreApplication::translate("MainWindow", "<html><head/><body><p>     Participants:</p></body></html>", nullptr));
         startSessionPushButton->setText(QCoreApplication::translate("MainWindow", "Start session", nullptr));
-        timeCreateIdeaLabel->setText(QCoreApplication::translate("MainWindow", "00:00", nullptr));
-        label_13->setText(QString());
+        timerCrIdeaLabel->setText(QCoreApplication::translate("MainWindow", "00:00", nullptr));
+        timeImgCrIdea->setText(QString());
         label_2->setText(QCoreApplication::translate("MainWindow", "Ideas:", nullptr));
         EndSessionButton->setText(QCoreApplication::translate("MainWindow", "End session", nullptr));
         timeCreateIdeaLabel_2->setText(QCoreApplication::translate("MainWindow", "00:00", nullptr));
