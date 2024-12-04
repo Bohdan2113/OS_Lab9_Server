@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <Windows.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -19,11 +20,8 @@ public:
 
 private slots:
     void on_createRoomButton_clicked();
-
     void on_startSessionPushButton_clicked();
-
     void on_EndSessionButton_clicked();
-
     void on_homeButton_clicked();
 
 private:

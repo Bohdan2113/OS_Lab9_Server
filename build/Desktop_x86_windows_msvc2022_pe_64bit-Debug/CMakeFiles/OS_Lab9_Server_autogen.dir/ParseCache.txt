@@ -143,6 +143,6 @@ C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Se
  mdp:D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qtwidgetsexports.h
  mdp:D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qtwidgetsglobal.h
  mdp:D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qwidget.h
+C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server/main.cpp
 C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server/mainwindow.cpp
  uic:./ui_mainwindow.h
-C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server/main.cpp

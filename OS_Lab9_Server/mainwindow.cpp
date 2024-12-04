@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include "QThread"
+#include "QTimer"
+#include <Windows.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -31,8 +33,9 @@ void MainWindow::on_EndSessionButton_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->votePage);
 
-    QThread::sleep(2);
-    ui->stackedWidget->setCurrentWidget(ui->podiumPage);
+    QTimer::singleShot(5000, this, [this]() {
+        ui->stackedWidget->setCurrentWidget(ui->podiumPage);
+    });
 }
 
 
@@ -40,4 +43,5 @@ void MainWindow::on_homeButton_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->homePage);
 }
+
 
