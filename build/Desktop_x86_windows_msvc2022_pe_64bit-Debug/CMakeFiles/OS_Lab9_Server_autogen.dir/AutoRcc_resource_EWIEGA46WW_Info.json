@@ -1,0 +1,32 @@
+{
+	"BUILD_DIR" : "C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/OS_Lab9_Server_autogen",
+	"CMAKE_BINARY_DIR" : "C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug",
+	"CMAKE_CURRENT_BINARY_DIR" : "C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug",
+	"CMAKE_CURRENT_SOURCE_DIR" : "C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server",
+	"CMAKE_SOURCE_DIR" : "C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server",
+	"CROSS_CONFIG" : false,
+	"GENERATOR" : "Ninja",
+	"INCLUDE_DIR" : "C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/OS_Lab9_Server_autogen/include",
+	"INPUTS" : 
+	[
+		"C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server/images/firstPlacePodium.png",
+		"C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server/images/clock.png",
+		"C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server/images/thirdPlacePodium.png",
+		"C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server/images/logo.png",
+		"C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server/images/mainPageBackground.png",
+		"C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server/images/moneyBackgroung.png",
+		"C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server/images/secondPlacePodium.png",
+		"C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server/images/waitPageBackgroung.png"
+	],
+	"LOCK_FILE" : "C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/CMakeFiles/OS_Lab9_Server_autogen.dir/AutoRcc_resource_EWIEGA46WW_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "--no-zstd", "-name", "resource" ],
+	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
+	"OUTPUT_NAME" : "qrc_resource.cpp",
+	"RCC_EXECUTABLE" : "D:/Qt/6.5.6/msvc2019_64/./bin/rcc.exe",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/CMakeFiles/OS_Lab9_Server_autogen.dir/AutoRcc_resource_EWIEGA46WW_Used.txt",
+	"SOURCE" : "C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server/resource.qrc",
+	"USE_BETTER_GRAPH" : false,
+	"VERBOSITY" : 0
+}

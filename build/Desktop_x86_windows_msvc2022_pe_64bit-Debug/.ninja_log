@@ -1,0 +1,12 @@
+# ninja log v5
+6	370	7549590897470923	OS_Lab9_Server_autogen/timestamp	ef70b125b94467c3
+6	370	7549590897470923	OS_Lab9_Server_autogen/mocs_compilation.cpp	ef70b125b94467c3
+6	370	7549590897470923	C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/OS_Lab9_Server_autogen/timestamp	ef70b125b94467c3
+6	370	7549590897470923	C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/OS_Lab9_Server_autogen/mocs_compilation.cpp	ef70b125b94467c3
+375	525	7549590899335357	OS_Lab9_Server_autogen/EWIEGA46WW/qrc_resource.cpp	4e1931153bdcf25a
+375	525	7549590899335357	C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/OS_Lab9_Server_autogen/EWIEGA46WW/qrc_resource.cpp	4e1931153bdcf25a
+541	1862	7549590912691184	CMakeFiles/OS_Lab9_Server.dir/OS_Lab9_Server_autogen/EWIEGA46WW/qrc_resource.cpp.obj	be47155c83826764
+530	2640	7549590920597057	CMakeFiles/OS_Lab9_Server.dir/main.cpp.obj	3de04be66b73f921
+526	2642	7549590920597057	CMakeFiles/OS_Lab9_Server.dir/OS_Lab9_Server_autogen/mocs_compilation.cpp.obj	adef698febd4a502
+536	3653	7549590930650129	CMakeFiles/OS_Lab9_Server.dir/mainwindow.cpp.obj	a9c6ee9cc6350bd2
+3654	4123	7549590935230587	OS_Lab9_Server.exe	f9f7a2860bbb692a
