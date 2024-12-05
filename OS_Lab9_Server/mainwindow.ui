@@ -39,7 +39,7 @@
        <string notr="true">background-color: rgb(255, 255, 255);</string>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="homePage">
        <property name="styleSheet">
@@ -138,9 +138,32 @@ background: transparent;
           </property>
           <property name="styleSheet">
            <string notr="true">color: rgb(0, 0, 0);
-background-color: rgb(255, 255, 255);
+
 width: 150px;                      /* Ширина кнопки */
-height: 50px;  </string>
+height: 50px;  
+background: transparent;
+background-color: rgb(255, 255, 255, 0.7);
+
+</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="errorLabel">
+          <property name="maximumSize">
+           <size>
+            <width>600</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background: transparent;
+font-size: 15px;
+width: 150px;                      /* Ширина кнопки */
+height: 20px;  </string>
+          </property>
+          <property name="text">
+           <string>T</string>
           </property>
          </widget>
         </item>
@@ -407,6 +430,11 @@ background: transparent;
            </item>
            <item>
             <widget class="QTableWidget" name="hamstersTableWidget">
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
              <property name="styleSheet">
               <string notr="true">background: transparent;
 background-color: rgb(255, 255, 255);
@@ -416,18 +444,31 @@ background-color: rgb(255, 255, 255);
               <bool>true</bool>
              </property>
              <property name="rowCount">
-              <number>5</number>
+              <number>0</number>
              </property>
              <property name="columnCount">
               <number>2</number>
              </property>
-             <row/>
-             <row/>
-             <row/>
-             <row/>
-             <row/>
-             <column/>
-             <column/>
+             <column>
+              <property name="text">
+               <string>User</string>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>____</string>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+             </column>
             </widget>
            </item>
            <item>
@@ -965,7 +1006,7 @@ background-color: rgba(255, 255, 255, 0.8); </string>
              <row/>
              <column>
               <property name="text">
-               <string>New Column</string>
+               <string>Idea</string>
               </property>
               <property name="font">
                <font>
@@ -975,7 +1016,7 @@ background-color: rgba(255, 255, 255, 0.8); </string>
              </column>
              <column>
               <property name="text">
-               <string>Idea</string>
+               <string>Author</string>
               </property>
               <property name="font">
                <font>
