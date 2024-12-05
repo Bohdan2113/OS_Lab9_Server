@@ -39,7 +39,7 @@
        <string notr="true">background-color: rgb(255, 255, 255);</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="homePage">
        <property name="styleSheet">
@@ -137,9 +137,9 @@ background: transparent;
            <bool>false</bool>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(0, 0, 0);
+           <string notr="true">
 
-width: 150px;                      /* Ширина кнопки */
+width: 150px;                      
 height: 50px;  
 background: transparent;
 background-color: rgb(255, 255, 255, 0.7);
@@ -207,9 +207,11 @@ background: transparent;
           </property>
           <property name="styleSheet">
            <string notr="true">color: rgb(0, 0, 0);
-background-color: rgb(255, 255, 255);
+
 width: 100px;                      /* Ширина кнопки */
-    height: 50px;  </string>
+    height: 50px;  
+background: transparent;
+background-color: rgb(255, 255, 255, 0.7);</string>
           </property>
           <property name="wrapping">
            <bool>false</bool>
@@ -860,7 +862,7 @@ QPushButton:pressed {
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="timeCreateIdeaLabel_2">
+           <widget class="QLabel" name="timeVoteLabel">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -998,6 +1000,9 @@ background-color: rgba(255, 255, 255, 0.8); </string>
              </attribute>
              <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
               <bool>false</bool>
+             </attribute>
+             <attribute name="verticalHeaderDefaultSectionSize">
+              <number>45</number>
              </attribute>
              <row/>
              <row/>
@@ -1165,7 +1170,7 @@ background: transparent;
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_24">
+         <widget class="QLabel" name="topicNameLabel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
