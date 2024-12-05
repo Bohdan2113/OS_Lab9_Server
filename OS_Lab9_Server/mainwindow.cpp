@@ -136,6 +136,9 @@ void MainWindow::AddIdea(string sIdea){
 }
 
 
+
+
+// Buttons
 void MainWindow::on_createRoomButton_clicked()
 {
     QLineEdit* lineEdit = ui->topicLineEdit;
@@ -169,6 +172,9 @@ void MainWindow::on_createRoomButton_clicked()
             );
         errorLabel->setStyleSheet("QLabel { color: black; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
         errorLabel->setText("");
+
+        this->topicName=lineEdit->text();
+        lineEdit->setText(" ");
     }
 
     ui->stackedWidget->setCurrentWidget(ui->hamstersPage);
@@ -176,9 +182,6 @@ void MainWindow::on_createRoomButton_clicked()
     string sUserName = "User7763";
     int iRes= AddUserInTable(ui->hamstersPage,sUserName );
     iRes = AddUserInTable(ui->hamstersPage, "Anonymus");
-
-
-
 }
 
 void MainWindow::on_startSessionPushButton_clicked()
@@ -199,15 +202,19 @@ void MainWindow::on_EndSessionButton_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->votePage);
 
-    QTimer::singleShot(5000, this, [this]() {
-        ui->stackedWidget->setCurrentWidget(ui->podiumPage);
-    });
-}
+    ui->topicNameLabel->setText(this->topicName);
 
+
+    // QTimer::singleShot(5000, this, [this]() {
+    //     ui->stackedWidget->setCurrentWidget(ui->podiumPage);
+    // });
+}
 
 void MainWindow::on_homeButton_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->homePage);
+    this->topicName="";
+
 }
 
 void MainWindow::on_topicLineEdit_textChanged(const QString &text)
@@ -242,6 +249,32 @@ void MainWindow::on_topicLineEdit_textChanged(const QString &text)
 
         errorLabel->setStyleSheet("QLabel { color: black; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
         errorLabel->setText("");
+    }
+}
+
+// Timer
+void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
+{
+    switch (pageIndex)
+    {
+    case 0: break;
+    case 1:
+        break;
+    case 2:
+        timer = new CountdownTimer(0, 7, ui->timerCrIdeaLabel, ui->votePage, ui->stackedWidget);
+        break;
+    case 3:
+        delete timer;
+        timer = nullptr;
+
+        timer = new CountdownTimer(0, 7, ui->timeVoteLabel, ui->podiumPage, ui->stackedWidget);
+        break;
+    case 4:
+        delete timer;
+        timer = nullptr;
+        break;
+    default:
+        break;
     }
 }
 
