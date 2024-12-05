@@ -4,12 +4,29 @@
 #include "QTimer"
 #include <Windows.h>
 
+#include <QWidget>
+#include <QMenu>
+#include <QAction>
+#include <QMessageBox>
+
+using namespace std;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     ui->stackedWidget->setCurrentWidget(ui->homePage);
+
+    ui->errorLabel->setText("");
+    ui->errorLabel->setStyleSheet("QLabel { color: black; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
+
+    ui->voteTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    ui->hamstersTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->hamstersTableWidget->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
+    ui->hamstersTableWidget->setColumnWidth(1, 150);
+
 }
 
 MainWindow::~MainWindow()
@@ -17,17 +34,166 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_createRoomButton_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->hamstersPage);
+
+// Додавання 1 нового користувача в табличку на hamstersTableWidget
+bool MainWindow::AddUserInTable(QWidget* page, std::string sUserName){
+
+    QTableWidget* table = page->findChild<QTableWidget*>("hamstersTableWidget");
+    if (!table) {
+        qDebug() << "Table hamstersTableWidget not found on the page!";
+        return false;
+    }
+
+    qDebug() << "Table founded ";
+    int currentRowCount = table->rowCount();
+    int iRowIndex= currentRowCount;
+    table->setRowCount(currentRowCount+1);
+
+    qDebug() << "Table: set iteam " ;
+    table->setItem(iRowIndex, 0, new QTableWidgetItem(QString::fromStdString(sUserName)));
+
+    QPushButton* button = new QPushButton("REMOVE", table);
+    QFont font = button->font();
+    font.setPointSize(16);
+    button->setFont(font);
+    button->setFixedSize(150, 50);
+
+    table->setCellWidget(iRowIndex, 1, button);
+    table->resizeRowsToContents();
+
+    connect(button, &QPushButton::clicked, this, [iRowIndex, table]() {
+
+        QMessageBox::StandardButton reply = QMessageBox::question(
+            nullptr, "Confirm deeltion",
+            "Are you sure that you want\n  to delete this user?",
+            QMessageBox::Yes | QMessageBox::No);
+
+        if (reply == QMessageBox::Yes) {
+            table->removeRow(iRowIndex);
+            qDebug() << "User row removed";
+
+            if (table->rowCount() == 0) {
+                qDebug() << "Table is now empty";
+            }
+        } else {
+            qDebug() << "User removal cancelled";
+        }
+    });
+
+     qDebug() << "Table: sucessfully set user "<< sUserName ;
+    return  true;
 }
 
+//Додавання ідеї до scroll area
+void MainWindow::AddIdea(string sIdea){
+    QWidget* contentWidget = ui->scrollAreaWidgetContents;
+    if (!contentWidget) return; // Перевірка на наявність
+
+    qDebug() << "Scroll area founded ";
+
+    QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(contentWidget->layout());
+    if (!layout) {
+        layout = new QVBoxLayout(contentWidget);
+        contentWidget->setLayout(layout);
+    }
+
+    QPushButton* button = new QPushButton(QString::fromStdString(sIdea), contentWidget);
+
+    QFont font = button->font();
+    font.setPointSize(16);
+    button->setFont(font);
+
+    button->adjustSize();
+    button->setFixedSize(720, 70);
+
+    QMenu *contextMenu = new QMenu(button);
+    QAction *deleteAction = new QAction("Delete", contextMenu);
+
+
+    contextMenu->addAction(deleteAction);
+    connect(deleteAction, &QAction::triggered, [=]() {
+        QMessageBox::StandardButton reply = QMessageBox::question(
+            nullptr, "Confirm deletion",
+             "Are you sure that you want\n  to delete this idea?",
+            QMessageBox::Yes | QMessageBox::No);
+
+        if (reply == QMessageBox::Yes) {
+            layout->removeWidget(button);
+            delete button;
+        } else {
+            qDebug() << "User removal cancelled";
+        }
+
+    });
+
+    button->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(button, &QPushButton::customContextMenuRequested, [=](const QPoint &pos) {
+        contextMenu->exec(button->mapToGlobal(pos));
+    });
+
+
+    layout->addWidget(button);
+}
+
+
+void MainWindow::on_createRoomButton_clicked()
+{
+    QLineEdit* lineEdit = ui->topicLineEdit;
+     QLabel* errorLabel = ui->errorLabel;
+
+    if (lineEdit->text().isEmpty()) {
+         lineEdit->setStyleSheet(
+             "QLineEdit { "
+             "border: 2px solid red; "
+             "color: rgb(0, 0, 0); "
+             "width: 150px; "
+             "height: 50px; "
+             "background: transparent; "
+             "background-color: rgb(255, 255, 255, 0.7); "
+             "}"
+             );
+
+         errorLabel->setStyleSheet("QLabel { color: red; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
+         errorLabel->setText("Enter name of the topic");
+
+        return;
+    } else {
+        lineEdit->setStyleSheet(
+            "QLineEdit { "
+            "color: rgb(0, 0, 0); "
+            "width: 150px; "
+            "height: 50px; "
+            "background: transparent; "
+            "background-color: rgb(255, 255, 255, 0.7); "
+            "}"
+            );
+        errorLabel->setStyleSheet("QLabel { color: black; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
+        errorLabel->setText("");
+    }
+
+    ui->stackedWidget->setCurrentWidget(ui->hamstersPage);
+
+    string sUserName = "User7763";
+    int iRes= AddUserInTable(ui->hamstersPage,sUserName );
+    iRes = AddUserInTable(ui->hamstersPage, "Anonymus");
+
+
+
+}
 
 void MainWindow::on_startSessionPushButton_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->createIdeaPage);
-}
 
+    AddIdea("Hello");
+    AddIdea("Sleep");
+    AddIdea("Coffee");
+    AddIdea("tea jgjhfj kjhkhfowhc ihdiwefhwkj kw");
+    AddIdea("Summer");
+    AddIdea("Summer2");
+    AddIdea("Summer3");
+    AddIdea("Summer4");
+}
 
 void MainWindow::on_EndSessionButton_clicked()
 {
@@ -44,4 +210,38 @@ void MainWindow::on_homeButton_clicked()
     ui->stackedWidget->setCurrentWidget(ui->homePage);
 }
 
+void MainWindow::on_topicLineEdit_textChanged(const QString &text)
+{
+    QLineEdit* lineEdit = ui->topicLineEdit;
+     QLabel* errorLabel = ui->errorLabel;
+
+    if (text.isEmpty()) {
+         lineEdit->setStyleSheet(
+             "QLineEdit { "
+             "border: 2px solid red; "
+             "color: rgb(0, 0, 0); "
+             "width: 150px; "
+             "height: 50px; "
+             "background: transparent; "
+             "background-color: rgb(255, 255, 255, 0.7); "
+             "}"
+             );
+
+         errorLabel->setStyleSheet("QLabel { color: red; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
+         errorLabel->setText("Enter name of the topic");
+    } else {
+        lineEdit->setStyleSheet(
+            "QLineEdit { "
+            "color: rgb(0, 0, 0); "
+            "width: 150px; "
+            "height: 50px; "
+            "background: transparent; "
+            "background-color: rgb(255, 255, 255, 0.7); "
+            "}"
+            );
+
+        errorLabel->setStyleSheet("QLabel { color: black; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
+        errorLabel->setText("");
+    }
+}
 
