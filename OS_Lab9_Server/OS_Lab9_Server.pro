@@ -11,11 +11,13 @@ CONFIG += c++17
 SOURCES += \
     countdowntimer.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    # server.cpp
 
 HEADERS += \
     countdowntimer.h \
-    mainwindow.h
+    mainwindow.h \
+    server.h
 
 FORMS += \
     mainwindow.ui

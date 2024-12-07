@@ -9,13 +9,12 @@
 #include <QAction>
 #include <QMessageBox>
 
-// #include "server.cpp"
+#include "server.h"
 
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     ui->stackedWidget->setCurrentWidget(ui->homePage);
@@ -28,10 +27,104 @@ MainWindow::MainWindow(QWidget *parent)
     ui->hamstersTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->hamstersTableWidget->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
     ui->hamstersTableWidget->setColumnWidth(1, 150);
+
+    int iResult = 1;
+    do {
+        mutexUI = CreateMutex(NULL, FALSE, NULL);
+        if (mutexUI == NULL) break;
+
+        mutexClients = CreateMutex(NULL, FALSE, NULL);
+        if (mutexClients == NULL) break;
+
+        mutexRecvMsg = CreateMutex(NULL, FALSE, NULL);
+        if (mutexRecvMsg == NULL) break;
+
+        mutexSendMsg = CreateMutex(NULL, FALSE, NULL);
+        if (mutexSendMsg == NULL) break;
+
+        mutexIdeas = CreateMutex(NULL, FALSE, NULL);
+        if (mutexIdeas == NULL) break;
+
+        iResult = 0;
+    } while (false);
+
+    if (iResult) {
+        printf("CreateMutex failed with error: %d\n", GetLastError());
+        return 1;
+    }
+
+    WSADATA wsaData;
+
+
+    struct addrinfo hints;
+
+    char recvBuf[DEFAULT_BUFLEN];
+    int  recvBufLen = DEFAULT_BUFLEN;
+
+    // Initialize Winsock
+    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (iResult != 0) {
+        printf("WSAStartup failed with error: %d\n", iResult);
+        return 1;
+    }
+
+    ZeroMemory(&hints, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
+    hints.ai_flags = AI_PASSIVE;
+
+    // Resolve the server address and port
+    iResult = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
+    if (iResult != 0) {
+        printf("getaddrinfo failed with error: %d\n", iResult);
+        WSACleanup();
+        return 1;
+    }
+
+    printf("Enter \"RS\" to start:\n");
+
+    DWORD  inputThreadID;
+    HANDLE inputThread = CreateThread(
+        NULL,
+        0,
+        inputMessages,
+        NULL,
+        0,
+        &inputThreadID
+        );
+
+    DWORD threadID_send;
+    HANDLE sendThread = CreateThread(
+        NULL,
+        0,
+        sendMessages,
+        &clients,
+        0,
+        &threadID_send
+        );
+    DWORD threadID_servent;
+    HANDLE serventThread = CreateThread(
+        NULL,
+        0,
+        receiveServent,
+        &clients,
+        0,
+        &threadID_servent
+        );
+
+    DWORD exitCode;
 }
 
 MainWindow::~MainWindow()
 {
+    WSACleanup();
+    CloseHandle(mutexUI);
+    CloseHandle(mutexClients);
+    CloseHandle(mutexRecvMsg);
+    CloseHandle(mutexSendMsg);
+    CloseHandle(mutexIdeas);
+
     delete ui;
 }
 
