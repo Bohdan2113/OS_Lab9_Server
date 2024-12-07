@@ -39,6 +39,7 @@ public:
     QLabel *label_6;
     QLabel *label;
     QLineEdit *topicLineEdit;
+    QLabel *errorLabel;
     QLabel *label_9;
     QTimeEdit *setTimeEdit;
     QSpacerItem *verticalSpacer_3;
@@ -73,7 +74,7 @@ public:
     QVBoxLayout *verticalLayout_9;
     QHBoxLayout *horizontalLayout_7;
     QSpacerItem *horizontalSpacer_5;
-    QLabel *timeCreateIdeaLabel_2;
+    QLabel *timeVoteLabel;
     QLabel *label_18;
     QWidget *widget_4;
     QVBoxLayout *verticalLayout_8;
@@ -86,7 +87,7 @@ public:
     QLabel *label_22;
     QSpacerItem *verticalSpacer_17;
     QLabel *label_23;
-    QLabel *label_24;
+    QLabel *topicNameLabel;
     QSpacerItem *verticalSpacer_18;
     QWidget *widget_14;
     QHBoxLayout *horizontalLayout_17;
@@ -169,12 +170,26 @@ public:
         topicLineEdit->setFont(font1);
         topicLineEdit->setTabletTracking(false);
         topicLineEdit->setAutoFillBackground(false);
-        topicLineEdit->setStyleSheet(QString::fromUtf8("color: rgb(0, 0, 0);\n"
-"background-color: rgb(255, 255, 255);\n"
-"width: 150px;                      /* \320\250\320\270\321\200\320\270\320\275\320\260 \320\272\320\275\320\276\320\277\320\272\320\270 */\n"
-"height: 50px;  "));
+        topicLineEdit->setStyleSheet(QString::fromUtf8("\n"
+"\n"
+"width: 150px;                      \n"
+"height: 50px;  \n"
+"background: transparent;\n"
+"background-color: rgb(255, 255, 255, 0.7);\n"
+"\n"
+""));
 
         verticalLayout_2->addWidget(topicLineEdit);
+
+        errorLabel = new QLabel(homePage);
+        errorLabel->setObjectName("errorLabel");
+        errorLabel->setMaximumSize(QSize(600, 20));
+        errorLabel->setStyleSheet(QString::fromUtf8("background: transparent;\n"
+"font-size: 15px;\n"
+"width: 150px;                      /* \320\250\320\270\321\200\320\270\320\275\320\260 \320\272\320\275\320\276\320\277\320\272\320\270 */\n"
+"height: 20px;  "));
+
+        verticalLayout_2->addWidget(errorLabel);
 
         label_9 = new QLabel(homePage);
         label_9->setObjectName("label_9");
@@ -198,9 +213,11 @@ public:
         font2.setPointSize(16);
         setTimeEdit->setFont(font2);
         setTimeEdit->setStyleSheet(QString::fromUtf8("color: rgb(0, 0, 0);\n"
-"background-color: rgb(255, 255, 255);\n"
+"\n"
 "width: 100px;                      /* \320\250\320\270\321\200\320\270\320\275\320\260 \320\272\320\275\320\276\320\277\320\272\320\270 */\n"
-"    height: 50px;  "));
+"    height: 50px;  \n"
+"background: transparent;\n"
+"background-color: rgb(255, 255, 255, 0.7);"));
         setTimeEdit->setWrapping(false);
         setTimeEdit->setFrame(true);
         setTimeEdit->setCurrentSection(QDateTimeEdit::Section::MinuteSection);
@@ -304,14 +321,19 @@ public:
         hamstersTableWidget = new QTableWidget(widget_2);
         if (hamstersTableWidget->columnCount() < 2)
             hamstersTableWidget->setColumnCount(2);
-        if (hamstersTableWidget->rowCount() < 5)
-            hamstersTableWidget->setRowCount(5);
+        QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
+        __qtablewidgetitem->setFont(font2);
+        hamstersTableWidget->setHorizontalHeaderItem(0, __qtablewidgetitem);
+        QTableWidgetItem *__qtablewidgetitem1 = new QTableWidgetItem();
+        __qtablewidgetitem1->setFont(font2);
+        hamstersTableWidget->setHorizontalHeaderItem(1, __qtablewidgetitem1);
         hamstersTableWidget->setObjectName("hamstersTableWidget");
+        hamstersTableWidget->setFont(font2);
         hamstersTableWidget->setStyleSheet(QString::fromUtf8("background: transparent;\n"
 "background-color: rgb(255, 255, 255);\n"
 ""));
         hamstersTableWidget->setShowGrid(true);
-        hamstersTableWidget->setRowCount(5);
+        hamstersTableWidget->setRowCount(0);
         hamstersTableWidget->setColumnCount(2);
 
         verticalLayout_5->addWidget(hamstersTableWidget);
@@ -501,19 +523,19 @@ public:
 
         horizontalLayout_7->addItem(horizontalSpacer_5);
 
-        timeCreateIdeaLabel_2 = new QLabel(votePage);
-        timeCreateIdeaLabel_2->setObjectName("timeCreateIdeaLabel_2");
-        sizePolicy2.setHeightForWidth(timeCreateIdeaLabel_2->sizePolicy().hasHeightForWidth());
-        timeCreateIdeaLabel_2->setSizePolicy(sizePolicy2);
-        timeCreateIdeaLabel_2->setMinimumSize(QSize(100, 0));
-        timeCreateIdeaLabel_2->setFont(font);
-        timeCreateIdeaLabel_2->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
+        timeVoteLabel = new QLabel(votePage);
+        timeVoteLabel->setObjectName("timeVoteLabel");
+        sizePolicy2.setHeightForWidth(timeVoteLabel->sizePolicy().hasHeightForWidth());
+        timeVoteLabel->setSizePolicy(sizePolicy2);
+        timeVoteLabel->setMinimumSize(QSize(100, 0));
+        timeVoteLabel->setFont(font);
+        timeVoteLabel->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
 "font-size: 30px;  \n"
 "background: transparent;\n"
 "\n"
 ""));
 
-        horizontalLayout_7->addWidget(timeCreateIdeaLabel_2);
+        horizontalLayout_7->addWidget(timeVoteLabel);
 
         label_18 = new QLabel(votePage);
         label_18->setObjectName("label_18");
@@ -553,15 +575,15 @@ public:
         voteTableWidget = new QTableWidget(widget_4);
         if (voteTableWidget->columnCount() < 3)
             voteTableWidget->setColumnCount(3);
-        QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
-        __qtablewidgetitem->setFont(font2);
-        voteTableWidget->setHorizontalHeaderItem(0, __qtablewidgetitem);
-        QTableWidgetItem *__qtablewidgetitem1 = new QTableWidgetItem();
-        __qtablewidgetitem1->setFont(font2);
-        voteTableWidget->setHorizontalHeaderItem(1, __qtablewidgetitem1);
         QTableWidgetItem *__qtablewidgetitem2 = new QTableWidgetItem();
         __qtablewidgetitem2->setFont(font2);
-        voteTableWidget->setHorizontalHeaderItem(2, __qtablewidgetitem2);
+        voteTableWidget->setHorizontalHeaderItem(0, __qtablewidgetitem2);
+        QTableWidgetItem *__qtablewidgetitem3 = new QTableWidgetItem();
+        __qtablewidgetitem3->setFont(font2);
+        voteTableWidget->setHorizontalHeaderItem(1, __qtablewidgetitem3);
+        QTableWidgetItem *__qtablewidgetitem4 = new QTableWidgetItem();
+        __qtablewidgetitem4->setFont(font2);
+        voteTableWidget->setHorizontalHeaderItem(2, __qtablewidgetitem4);
         if (voteTableWidget->rowCount() < 5)
             voteTableWidget->setRowCount(5);
         voteTableWidget->setObjectName("voteTableWidget");
@@ -576,6 +598,7 @@ public:
         voteTableWidget->horizontalHeader()->setCascadingSectionResizes(false);
         voteTableWidget->horizontalHeader()->setMinimumSectionSize(60);
         voteTableWidget->horizontalHeader()->setProperty("showSortIndicator", QVariant(false));
+        voteTableWidget->verticalHeader()->setDefaultSectionSize(45);
 
         verticalLayout_8->addWidget(voteTableWidget);
 
@@ -628,18 +651,18 @@ public:
 
         verticalLayout_10->addWidget(label_23);
 
-        label_24 = new QLabel(podiumPage);
-        label_24->setObjectName("label_24");
-        sizePolicy.setHeightForWidth(label_24->sizePolicy().hasHeightForWidth());
-        label_24->setSizePolicy(sizePolicy);
-        label_24->setFont(font);
-        label_24->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
+        topicNameLabel = new QLabel(podiumPage);
+        topicNameLabel->setObjectName("topicNameLabel");
+        sizePolicy.setHeightForWidth(topicNameLabel->sizePolicy().hasHeightForWidth());
+        topicNameLabel->setSizePolicy(sizePolicy);
+        topicNameLabel->setFont(font);
+        topicNameLabel->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
 "font-size: 30px;  \n"
 "background: transparent;\n"
 ""));
-        label_24->setAlignment(Qt::AlignmentFlag::AlignCenter);
+        topicNameLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
-        verticalLayout_10->addWidget(label_24);
+        verticalLayout_10->addWidget(topicNameLabel);
 
         verticalSpacer_18 = new QSpacerItem(20, 2, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
 
@@ -841,28 +864,33 @@ public:
 #if QT_CONFIG(tooltip)
         topicLineEdit->setToolTip(QString());
 #endif // QT_CONFIG(tooltip)
+        errorLabel->setText(QCoreApplication::translate("MainWindow", "T", nullptr));
         label_9->setText(QCoreApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:18pt;\">Time:</span></p></body></html>", nullptr));
         setTimeEdit->setDisplayFormat(QCoreApplication::translate("MainWindow", "mm:ss", nullptr));
         createRoomButton->setText(QCoreApplication::translate("MainWindow", "Create room", nullptr));
         label_11->setText(QString());
         label_3->setText(QCoreApplication::translate("MainWindow", "<html><head/><body><p>     Participants:</p></body></html>", nullptr));
+        QTableWidgetItem *___qtablewidgetitem = hamstersTableWidget->horizontalHeaderItem(0);
+        ___qtablewidgetitem->setText(QCoreApplication::translate("MainWindow", "User", nullptr));
+        QTableWidgetItem *___qtablewidgetitem1 = hamstersTableWidget->horizontalHeaderItem(1);
+        ___qtablewidgetitem1->setText(QCoreApplication::translate("MainWindow", "____", nullptr));
         startSessionPushButton->setText(QCoreApplication::translate("MainWindow", "Start session", nullptr));
         timerCrIdeaLabel->setText(QCoreApplication::translate("MainWindow", "00:00", nullptr));
         timeImgCrIdea->setText(QString());
         label_2->setText(QCoreApplication::translate("MainWindow", "Ideas:", nullptr));
         EndSessionButton->setText(QCoreApplication::translate("MainWindow", "End session", nullptr));
-        timeCreateIdeaLabel_2->setText(QCoreApplication::translate("MainWindow", "00:00", nullptr));
+        timeVoteLabel->setText(QCoreApplication::translate("MainWindow", "00:00", nullptr));
         label_18->setText(QString());
         label_16->setText(QCoreApplication::translate("MainWindow", "Votes:", nullptr));
-        QTableWidgetItem *___qtablewidgetitem = voteTableWidget->horizontalHeaderItem(0);
-        ___qtablewidgetitem->setText(QCoreApplication::translate("MainWindow", "New Column", nullptr));
-        QTableWidgetItem *___qtablewidgetitem1 = voteTableWidget->horizontalHeaderItem(1);
-        ___qtablewidgetitem1->setText(QCoreApplication::translate("MainWindow", "Idea", nullptr));
-        QTableWidgetItem *___qtablewidgetitem2 = voteTableWidget->horizontalHeaderItem(2);
-        ___qtablewidgetitem2->setText(QCoreApplication::translate("MainWindow", "Votes", nullptr));
+        QTableWidgetItem *___qtablewidgetitem2 = voteTableWidget->horizontalHeaderItem(0);
+        ___qtablewidgetitem2->setText(QCoreApplication::translate("MainWindow", "Idea", nullptr));
+        QTableWidgetItem *___qtablewidgetitem3 = voteTableWidget->horizontalHeaderItem(1);
+        ___qtablewidgetitem3->setText(QCoreApplication::translate("MainWindow", "Author", nullptr));
+        QTableWidgetItem *___qtablewidgetitem4 = voteTableWidget->horizontalHeaderItem(2);
+        ___qtablewidgetitem4->setText(QCoreApplication::translate("MainWindow", "Votes", nullptr));
         label_22->setText(QString());
         label_23->setText(QCoreApplication::translate("MainWindow", "Top 3 ideas:", nullptr));
-        label_24->setText(QCoreApplication::translate("MainWindow", "How to stay survive?", nullptr));
+        topicNameLabel->setText(QCoreApplication::translate("MainWindow", "How to stay survive?", nullptr));
         label_25->setText(QCoreApplication::translate("MainWindow", "erjteyjety jetyjejet", nullptr));
         label_26->setText(QString());
         label_27->setText(QCoreApplication::translate("MainWindow", "dtykfjrtsje\321\203\320\260\320\272\320\277\320\272\320\265\321\200\320\265\320\275\321\200\320\274\320\272\320\260tyjetyj etyjetjyt", nullptr));

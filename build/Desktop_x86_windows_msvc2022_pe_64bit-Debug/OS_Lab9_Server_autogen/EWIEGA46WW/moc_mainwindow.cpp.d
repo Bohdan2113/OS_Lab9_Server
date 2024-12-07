@@ -1,6 +1,9 @@
 C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desktop_x86_windows_msvc2022_pe_64bit-Debug/OS_Lab9_Server_autogen/EWIEGA46WW/moc_mainwindow.cpp: C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server/mainwindow.h \
+  C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/OS_Lab9_Server/countdowntimer.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtCore/QTimer \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/q20memory.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/q20type_traits.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtCore/qabstractitemmodel.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qalgorithms.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qanystringview.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qarraydata.h \
@@ -10,6 +13,7 @@ C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desk
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qatomic.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qatomic_cxx11.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qbasicatomic.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtCore/qbasictimer.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qbindingstorage.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qbytearray.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qbytearrayalgorithms.h \
@@ -25,9 +29,13 @@ C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desk
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qcontainerinfo.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qcontainertools_impl.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qcontiguouscache.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtCore/qcoreapplication.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtCore/qcoreapplication_platform.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtCore/qcoreevent.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qdarwinhelpers.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qdatastream.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qdebug.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtCore/qeventloop.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qexceptionhandling.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qflags.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qfloat16.h \
@@ -38,11 +46,14 @@ C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desk
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qglobalstatic.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qhash.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qhashfunctions.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtCore/qiodevice.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qiodevicebase.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtCore/qitemselectionmodel.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qiterable.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qiterator.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qline.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qlist.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtCore/qlocale.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qlogging.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qmalloc.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qmap.h \
@@ -52,6 +63,7 @@ C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desk
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qmetatype.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qminmax.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qnamespace.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtCore/qnativeinterface.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qnumeric.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qobject.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qobject_impl.h \
@@ -63,6 +75,7 @@ C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desk
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qprocessordetection.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qrect.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qrefcount.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtCore/qregularexpression.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qscopedpointer.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qscopeguard.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qset.h \
@@ -92,6 +105,7 @@ C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desk
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qtdeprecationmarkers.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qtenvironmentvariables.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qtextstream.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtCore/qtimer.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qtmetamacros.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qtnoop.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qtpreprocessorsupport.h \
@@ -102,6 +116,7 @@ C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desk
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qtversionchecks.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qtypeinfo.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qtypes.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtCore/qurl.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qutf8stringview.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qvariant.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtCore/qvarlengtharray.h \
@@ -115,26 +130,53 @@ C:/Users/bogda/OneDrive/Desktop/Semester3/OS/Lab_9(OS)/OS_Lab9_Server/build/Desk
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qfont.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qfontinfo.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qfontmetrics.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtGui/qguiapplication.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtGui/qguiapplication_platform.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qicon.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qimage.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtGui/qinputmethod.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qkeysequence.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qpaintdevice.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qpalette.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtGui/qpicture.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qpixelformat.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qpixmap.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qpolygon.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qregion.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qrgb.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qrgba64.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtGui/qtextdocument.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qtgui-config.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qtguiexports.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qtguiglobal.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qtransform.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtGui/qvalidator.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qwindowdefs.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtGui/qwindowdefs_win.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/QApplication \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/QLabel \
   D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/QMainWindow \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/QStackedWidget \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/QTableWidget \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/QWidget \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qabstractitemdelegate.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qabstractitemview.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qabstractscrollarea.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qabstractslider.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qabstractspinbox.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qapplication.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qframe.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qlabel.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qmainwindow.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qrubberband.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qsizepolicy.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qslider.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qstackedwidget.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qstyle.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qstyleoption.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qtabbar.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qtableview.h \
+  D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qtablewidget.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qtabwidget.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qtwidgets-config.h \
   D:/Qt/6.5.6/msvc2019_64/include/QtWidgets/qtwidgetsexports.h \

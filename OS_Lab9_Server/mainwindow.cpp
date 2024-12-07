@@ -9,6 +9,8 @@
 #include <QAction>
 #include <QMessageBox>
 
+// #include "server.cpp"
+
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent)
@@ -26,7 +28,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->hamstersTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->hamstersTableWidget->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
     ui->hamstersTableWidget->setColumnWidth(1, 150);
-
 }
 
 MainWindow::~MainWindow()
