@@ -1,7 +1,7 @@
 #include "countdowntimer.h"
 
-CountdownTimer::CountdownTimer(int minutes, int seconds, QLabel* label, QWidget* nextPage, QStackedWidget* stackedWidget)
-    : minutes(minutes), seconds(seconds), timeLabel(label), nextPage(nextPage), stackedWidget(stackedWidget)
+CountdownTimer::CountdownTimer(int minutes, int seconds, QLabel* label, std::function<void()> callback = nullptr)
+    : minutes(minutes), seconds(seconds), timeLabel(label), onCompleteCallback(callback)
 {
     // Ініціалізація таймера
     timer = new QTimer(this);
@@ -23,7 +23,11 @@ void CountdownTimer::updateTime() {
             timer->stop(); // Зупиняємо таймер
             delete timer; // Звільняємо таймер
             timer = nullptr;
-            stackedWidget->setCurrentWidget(nextPage);
+
+            if (onCompleteCallback) {
+                onCompleteCallback();
+            }
+
             return;
         } else {
             minutes--;

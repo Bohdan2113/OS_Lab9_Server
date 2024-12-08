@@ -2,7 +2,6 @@
 #include "./ui_mainwindow.h"
 #include "QThread"
 #include "QTimer"
-#include <Windows.h>
 
 #include <QWidget>
 #include <QMenu>
@@ -28,92 +27,88 @@ MainWindow::MainWindow(QWidget *parent)
     ui->hamstersTableWidget->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
     ui->hamstersTableWidget->setColumnWidth(1, 150);
 
-    int iResult = 1;
+    podium.push_back(ui->firstPlaceLabel);
+    podium.push_back(ui->secondPlaceLabel);
+    podium.push_back(ui->thirdPlaceLabel);
+
     do {
-        mutexUI = CreateMutex(NULL, FALSE, NULL);
-        if (mutexUI == NULL) break;
+        int iResult = 1;
+        do {
+            mutexUI = CreateMutex(NULL, FALSE, NULL);
+            if (mutexUI == NULL) break;
 
-        mutexClients = CreateMutex(NULL, FALSE, NULL);
-        if (mutexClients == NULL) break;
+            mutexClients = CreateMutex(NULL, FALSE, NULL);
+            if (mutexClients == NULL) break;
 
-        mutexRecvMsg = CreateMutex(NULL, FALSE, NULL);
-        if (mutexRecvMsg == NULL) break;
+            mutexRecvMsg = CreateMutex(NULL, FALSE, NULL);
+            if (mutexRecvMsg == NULL) break;
 
-        mutexSendMsg = CreateMutex(NULL, FALSE, NULL);
-        if (mutexSendMsg == NULL) break;
+            mutexSendMsg = CreateMutex(NULL, FALSE, NULL);
+            if (mutexSendMsg == NULL) break;
 
-        mutexIdeas = CreateMutex(NULL, FALSE, NULL);
-        if (mutexIdeas == NULL) break;
+            mutexIdeas = CreateMutex(NULL, FALSE, NULL);
+            if (mutexIdeas == NULL) break;
 
-        iResult = 0;
-    } while (false);
+            iResult = 0;
+        } while (false);
 
-    if (iResult) {
-        printf("CreateMutex failed with error: %d\n", GetLastError());
-        return 1;
-    }
+        if (iResult) {
+            printf("CreateMutex failed with error: %d\n", GetLastError());
+            break;
+        }
 
-    WSADATA wsaData;
+        WSADATA wsaData;
 
 
-    struct addrinfo hints;
+        struct addrinfo hints;
 
-    char recvBuf[DEFAULT_BUFLEN];
-    int  recvBufLen = DEFAULT_BUFLEN;
+        char recvBuf[DEFAULT_BUFLEN];
+        int  recvBufLen = DEFAULT_BUFLEN;
 
-    // Initialize Winsock
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (iResult != 0) {
-        printf("WSAStartup failed with error: %d\n", iResult);
-        return 1;
-    }
+        // Initialize Winsock
+        iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+        if (iResult != 0) {
+            printf("WSAStartup failed with error: %d\n", iResult);
+            break;
+        }
 
-    ZeroMemory(&hints, sizeof(hints));
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_protocol = IPPROTO_TCP;
-    hints.ai_flags = AI_PASSIVE;
+        ZeroMemory(&hints, sizeof(hints));
+        hints.ai_family = AF_INET;
+        hints.ai_socktype = SOCK_STREAM;
+        hints.ai_protocol = IPPROTO_TCP;
+        hints.ai_flags = AI_PASSIVE;
 
-    // Resolve the server address and port
-    iResult = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
-    if (iResult != 0) {
-        printf("getaddrinfo failed with error: %d\n", iResult);
-        WSACleanup();
-        return 1;
-    }
+        // Resolve the server address and port
+        iResult = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
+        if (iResult != 0) {
+            printf("getaddrinfo failed with error: %d\n", iResult);
+            WSACleanup();
+            break;
+        }
 
-    printf("Enter \"RS\" to start:\n");
+        printf("Enter \"RS\" to start:\n");
 
-    DWORD  inputThreadID;
-    HANDLE inputThread = CreateThread(
-        NULL,
-        0,
-        inputMessages,
-        NULL,
-        0,
-        &inputThreadID
-        );
 
-    DWORD threadID_send;
-    HANDLE sendThread = CreateThread(
-        NULL,
-        0,
-        sendMessages,
-        &clients,
-        0,
-        &threadID_send
-        );
-    DWORD threadID_servent;
-    HANDLE serventThread = CreateThread(
-        NULL,
-        0,
-        receiveServent,
-        &clients,
-        0,
-        &threadID_servent
-        );
+        DWORD threadID_send;
+        HANDLE sendThread = CreateThread(
+            NULL,
+            0,
+            sendMessages,
+            &clients,
+            0,
+            &threadID_send
+            );
+        DWORD threadID_servent;
+        HANDLE serventThread = CreateThread(
+            NULL,
+            0,
+            receiveServent,
+            &clients,
+            0,
+            &threadID_servent
+            );
 
-    DWORD exitCode;
+    } while (0);
 }
 
 MainWindow::~MainWindow()
@@ -126,6 +121,270 @@ MainWindow::~MainWindow()
     CloseHandle(mutexIdeas);
 
     delete ui;
+}
+
+
+QTimer *updateTimer;
+int prevClientsCount = 0;
+int prevIdeasCount = 0;
+
+
+void MainWindow::updateClientsTable() {
+
+    WaitForSingleObject(mutexClients, INFINITY);
+    int clientsCount = clients.size();
+    if (clientsCount > prevClientsCount) {
+        for (int i = prevClientsCount; i < clientsCount; i++) {
+            AddUserInTable(ui->hamstersPage, clients[i].name);
+        }
+    }
+    prevClientsCount = clientsCount;
+    ReleaseMutex(mutexClients);
+}
+
+void MainWindow::updateIdeasTable() {
+
+    WaitForSingleObject(mutexIdeas, INFINITY);
+    int ideasCount = ideaVector.size();
+    if (ideasCount > prevIdeasCount) {
+        for (int i = prevIdeasCount; i < ideasCount; i++) {
+            AddIdea(ideaVector[i].message.message, ideaVector[i].ideaTID);
+        }
+    }
+    prevIdeasCount = ideasCount;
+    ReleaseMutex(mutexIdeas);
+}
+
+
+// Buttons
+void MainWindow::on_createRoomButton_clicked()
+{
+    QLineEdit* lineEdit = ui->topicLineEdit;
+    QLabel* errorLabel = ui->errorLabel;
+
+    if (lineEdit->text().isEmpty()) {
+        lineEdit->setStyleSheet(
+            "QLineEdit { "
+            "border: 2px solid red; "
+            "color: rgb(0, 0, 0); "
+            "width: 150px; "
+            "height: 50px; "
+            "background: transparent; "
+            "background-color: rgb(255, 255, 255, 0.7); "
+            "}"
+            );
+
+        errorLabel->setStyleSheet("QLabel { color: red; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
+        errorLabel->setText("Enter name of the topic");
+
+        return;
+    } else {
+        lineEdit->setStyleSheet(
+            "QLineEdit { "
+            "color: rgb(0, 0, 0); "
+            "width: 150px; "
+            "height: 50px; "
+            "background: transparent; "
+            "background-color: rgb(255, 255, 255, 0.7); "
+            "}"
+            );
+        errorLabel->setStyleSheet("QLabel { color: black; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
+        errorLabel->setText("");
+
+        QTime time = ui->setTimeEdit->time();
+        int minutes = time.minute();
+        int seconds = time.second();
+
+        sessionTimeSec = minutes * 60 + seconds;
+        sessionTopic=lineEdit->text().toStdString();
+
+        lineEdit->setText(" ");
+
+        updateTimer = new QTimer(this);
+        connect(updateTimer, &QTimer::timeout, this, &MainWindow::updateClientsTable);
+        updateTimer->start(1000);
+    }
+
+    WaitForSingleObject(mutexSendMsg, INFINITE);
+    sendMessageQueue.push("RS");
+    ReleaseMutex(mutexSendMsg);
+
+    ui->stackedWidget->setCurrentWidget(ui->hamstersPage);
+
+}
+
+void MainWindow::on_startSessionPushButton_clicked()
+{
+    prevClientsCount = 0;
+    updateTimer->stop();
+
+    disconnect(updateTimer, &QTimer::timeout, this, &MainWindow::updateClientsTable);
+    connect(updateTimer, &QTimer::timeout, this, &MainWindow::updateIdeasTable);
+
+    updateTimer->start(1000);
+
+    ui->stackedWidget->setCurrentWidget(ui->createIdeaPage);
+
+    WaitForSingleObject(mutexSendMsg, INFINITE);
+    sendMessageQueue.push("SS");
+    ReleaseMutex(mutexSendMsg);
+}
+
+void MainWindow::on_EndSessionButton_clicked()
+{
+    prevIdeasCount = 0;
+    updateTimer->stop();
+
+    WaitForSingleObject(mutexSendMsg, INFINITE);
+    sendMessageQueue.push("ES");
+    ReleaseMutex(mutexSendMsg);
+
+    ui->stackedWidget->setCurrentWidget(ui->votePage);
+    ui->topicNameLabel->setText(this->topicName);
+    ui->EndSessionButton->setEnabled(false); // Увімкнути кнопку
+
+}
+
+void MainWindow::on_homeButton_clicked()
+{
+    ui->EndSessionButton->setEnabled(true); // Увімкнути кнопку
+
+    ui->stackedWidget->setCurrentWidget(ui->homePage);
+    this->topicName="";
+
+    WaitForSingleObject(mutexSendMsg, INFINITE);
+    sendMessageQueue.push("RS");
+    ReleaseMutex(mutexSendMsg);
+}
+
+
+void MainWindow::on_topicLineEdit_textChanged(const QString &text)
+{
+    QLineEdit* lineEdit = ui->topicLineEdit;
+     QLabel* errorLabel = ui->errorLabel;
+
+    if (text.isEmpty()) {
+         lineEdit->setStyleSheet(
+             "QLineEdit { "
+             "border: 2px solid red; "
+             "color: rgb(0, 0, 0); "
+             "width: 150px; "
+             "height: 50px; "
+             "background: transparent; "
+             "background-color: rgb(255, 255, 255, 0.7); "
+             "}"
+             );
+
+         errorLabel->setStyleSheet("QLabel { color: red; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
+         errorLabel->setText("Enter name of the topic");
+    } else {
+        lineEdit->setStyleSheet(
+            "QLineEdit { "
+            "color: rgb(0, 0, 0); "
+            "width: 150px; "
+            "height: 50px; "
+            "background: transparent; "
+            "background-color: rgb(255, 255, 255, 0.7); "
+            "}"
+            );
+
+        errorLabel->setStyleSheet("QLabel { color: black; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
+        errorLabel->setText("");
+    }
+}
+
+void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
+{
+    int minutes = 0;
+    int seconds = 0;
+
+    static QTimer* progStageTimer = nullptr; // Таймер для перевірки progStage
+
+    switch (pageIndex)
+    {
+    case 0: break;
+    case 1:
+        break;
+    case 2:
+        minutes = sessionTimeSec / 60;
+        seconds = sessionTimeSec % 60;
+
+        timer = new CountdownTimer(minutes, seconds, ui->timerCrIdeaLabel, [this]() {
+            WaitForSingleObject(mutexSendMsg, INFINITE);
+            sendMessageQueue.push("ES");
+            ReleaseMutex(mutexSendMsg);
+        });
+
+        // Якщо таймер вже запущений, видалимо його
+        delete progStageTimer;
+        progStageTimer = nullptr;
+
+        // Створюємо новий таймер
+        progStageTimer = new QTimer(this);
+        connect(progStageTimer, &QTimer::timeout, [this]() {
+            if (progStage == "SV") {
+                progStage = "DS";
+
+                WaitForSingleObject(mutexSendMsg, INFINITE);
+                sendMessageQueue.push("SV");
+                ReleaseMutex(mutexSendMsg);
+
+                ui->stackedWidget->setCurrentWidget(ui->votePage);
+
+                progStageTimer->stop();
+                delete progStageTimer;
+                progStageTimer = nullptr;
+            }
+        });
+
+        progStageTimer->start(100); // Перевірка кожні 100 мс
+
+        break;
+    case 3:
+        delete timer;
+        timer = nullptr;
+
+        timer = new CountdownTimer(1, 0, ui->timeVoteLabel, [this]() {
+            WaitForSingleObject(mutexSendMsg, INFINITE);
+            sendMessageQueue.push("EV");
+            ReleaseMutex(mutexSendMsg);
+        });
+
+        // Якщо таймер вже запущений, видалимо його
+        delete progStageTimer;
+        progStageTimer = nullptr;
+
+        // Створюємо новий таймер
+        progStageTimer = new QTimer(this);
+        connect(progStageTimer, &QTimer::timeout, [this]() {
+            if (progStage == "EV") {
+                progStage = "DS";
+
+                WaitForSingleObject(mutexSendMsg, INFINITE);
+                sendMessageQueue.push("EV");
+                ReleaseMutex(mutexSendMsg);
+
+                ui->stackedWidget->setCurrentWidget(ui->podiumPage);
+
+                progStageTimer->stop();
+                delete progStageTimer;
+                progStageTimer = nullptr;
+            }
+        });
+
+        progStageTimer->start(100); // Перевірка кожні 100 мс
+
+        break;
+    case 4:
+        delete timer;
+        timer = nullptr;
+
+        OutputPodium();
+
+        break;
+    default:
+        break;
+    }
 }
 
 
@@ -163,7 +422,11 @@ bool MainWindow::AddUserInTable(QWidget* page, std::string sUserName){
             QMessageBox::Yes | QMessageBox::No);
 
         if (reply == QMessageBox::Yes) {
+            WaitForSingleObject(mutexClients, INFINITY);
             table->removeRow(iRowIndex);
+            closeClientWithUID(clients, clients[iRowIndex].clientUID);
+            ReleaseMutex(mutexClients);
+
             qDebug() << "User row removed";
 
             if (table->rowCount() == 0) {
@@ -174,12 +437,12 @@ bool MainWindow::AddUserInTable(QWidget* page, std::string sUserName){
         }
     });
 
-     qDebug() << "Table: sucessfully set user "<< sUserName ;
+    qDebug() << "Table: sucessfully set user "<< sUserName ;
     return  true;
 }
 
 //Додавання ідеї до scroll area
-void MainWindow::AddIdea(string sIdea){
+void MainWindow::AddIdea(string sIdea, int TID){
     QWidget* contentWidget = ui->scrollAreaWidgetContents;
     if (!contentWidget) return; // Перевірка на наявність
 
@@ -193,6 +456,7 @@ void MainWindow::AddIdea(string sIdea){
 
     QPushButton* button = new QPushButton(QString::fromStdString(sIdea), contentWidget);
 
+    button->setProperty("ideaID", TID);
     QFont font = button->font();
     font.setPointSize(16);
     button->setFont(font);
@@ -206,13 +470,17 @@ void MainWindow::AddIdea(string sIdea){
 
     contextMenu->addAction(deleteAction);
     connect(deleteAction, &QAction::triggered, [=]() {
+
         QMessageBox::StandardButton reply = QMessageBox::question(
             nullptr, "Confirm deletion",
-             "Are you sure that you want\n  to delete this idea?",
+            "Are you sure that you want\n  to delete this idea?",
             QMessageBox::Yes | QMessageBox::No);
 
         if (reply == QMessageBox::Yes) {
+            WaitForSingleObject(mutexIdeas, INFINITY);
             layout->removeWidget(button);
+            deleteIdea(TID);
+            ReleaseMutex(mutexIdeas);
             delete button;
         } else {
             qDebug() << "User removal cancelled";
@@ -229,146 +497,14 @@ void MainWindow::AddIdea(string sIdea){
     layout->addWidget(button);
 }
 
-
-
-
-// Buttons
-void MainWindow::on_createRoomButton_clicked()
+void MainWindow::OutputPodium()
 {
-    QLineEdit* lineEdit = ui->topicLineEdit;
-     QLabel* errorLabel = ui->errorLabel;
+    for(int i = 0; i < (ideaVector.size() < 3 ? ideaVector.size() : 3); i++) {
+        if (podium[i] == nullptr)
+            qDebug() << "podium " << i << " nullptr";
+        podium[i]->setText(QString::fromStdString(ideaVector[i].message.message));
 
-    if (lineEdit->text().isEmpty()) {
-         lineEdit->setStyleSheet(
-             "QLineEdit { "
-             "border: 2px solid red; "
-             "color: rgb(0, 0, 0); "
-             "width: 150px; "
-             "height: 50px; "
-             "background: transparent; "
-             "background-color: rgb(255, 255, 255, 0.7); "
-             "}"
-             );
-
-         errorLabel->setStyleSheet("QLabel { color: red; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
-         errorLabel->setText("Enter name of the topic");
-
-        return;
-    } else {
-        lineEdit->setStyleSheet(
-            "QLineEdit { "
-            "color: rgb(0, 0, 0); "
-            "width: 150px; "
-            "height: 50px; "
-            "background: transparent; "
-            "background-color: rgb(255, 255, 255, 0.7); "
-            "}"
-            );
-        errorLabel->setStyleSheet("QLabel { color: black; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
-        errorLabel->setText("");
-
-        this->topicName=lineEdit->text();
-        lineEdit->setText(" ");
-    }
-
-    ui->stackedWidget->setCurrentWidget(ui->hamstersPage);
-
-    string sUserName = "User7763";
-    int iRes= AddUserInTable(ui->hamstersPage,sUserName );
-    iRes = AddUserInTable(ui->hamstersPage, "Anonymus");
-}
-
-void MainWindow::on_startSessionPushButton_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->createIdeaPage);
-
-    AddIdea("Hello");
-    AddIdea("Sleep");
-    AddIdea("Coffee");
-    AddIdea("tea jgjhfj kjhkhfowhc ihdiwefhwkj kw");
-    AddIdea("Summer");
-    AddIdea("Summer2");
-    AddIdea("Summer3");
-    AddIdea("Summer4");
-}
-
-void MainWindow::on_EndSessionButton_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->votePage);
-
-    ui->topicNameLabel->setText(this->topicName);
-
-
-    // QTimer::singleShot(5000, this, [this]() {
-    //     ui->stackedWidget->setCurrentWidget(ui->podiumPage);
-    // });
-}
-
-void MainWindow::on_homeButton_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->homePage);
-    this->topicName="";
-
-}
-
-void MainWindow::on_topicLineEdit_textChanged(const QString &text)
-{
-    QLineEdit* lineEdit = ui->topicLineEdit;
-     QLabel* errorLabel = ui->errorLabel;
-
-    if (text.isEmpty()) {
-         lineEdit->setStyleSheet(
-             "QLineEdit { "
-             "border: 2px solid red; "
-             "color: rgb(0, 0, 0); "
-             "width: 150px; "
-             "height: 50px; "
-             "background: transparent; "
-             "background-color: rgb(255, 255, 255, 0.7); "
-             "}"
-             );
-
-         errorLabel->setStyleSheet("QLabel { color: red; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
-         errorLabel->setText("Enter name of the topic");
-    } else {
-        lineEdit->setStyleSheet(
-            "QLineEdit { "
-            "color: rgb(0, 0, 0); "
-            "width: 150px; "
-            "height: 50px; "
-            "background: transparent; "
-            "background-color: rgb(255, 255, 255, 0.7); "
-            "}"
-            );
-
-        errorLabel->setStyleSheet("QLabel { color: black; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
-        errorLabel->setText("");
-    }
-}
-
-// Timer
-void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
-{
-    switch (pageIndex)
-    {
-    case 0: break;
-    case 1:
-        break;
-    case 2:
-        timer = new CountdownTimer(0, 7, ui->timerCrIdeaLabel, ui->votePage, ui->stackedWidget);
-        break;
-    case 3:
-        delete timer;
-        timer = nullptr;
-
-        timer = new CountdownTimer(0, 7, ui->timeVoteLabel, ui->podiumPage, ui->stackedWidget);
-        break;
-    case 4:
-        delete timer;
-        timer = nullptr;
-        break;
-    default:
-        break;
+        qDebug() << "podium set: " << i;
     }
 }
 

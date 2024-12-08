@@ -1,6 +1,7 @@
 #include "server.h"
 
-DWORD WINAPI receiveServent(LPVOID param) {
+DWORD WINAPI receiveServent(LPVOID param)
+{
     std::vector<Client>* clients = (std::vector<Client>*)param;
 
     while (true) {
@@ -59,7 +60,8 @@ DWORD WINAPI receiveServent(LPVOID param) {
     }
 }
 
-DWORD WINAPI checkAllAM(LPVOID param) {
+DWORD WINAPI checkAllAM(LPVOID param)
+{
     std::vector<Client>* clients = (std::vector<Client>*)param;
 
     DWORD exitThreadCode = 0;
@@ -76,60 +78,28 @@ DWORD WINAPI checkAllAM(LPVOID param) {
     return exitThreadCode;
 }
 
-DWORD WINAPI inputMessages(LPVOID param) {
-    DWORD exitThreadCode = 0;
+// DWORD WINAPI inputMessages(LPVOID param) {
+//     DWORD exitThreadCode = 0;
 
-    while (true) {
-        std::string message;
-        getline(std::cin, message);
+//     while (true) {
+//         std::string message;
+//         getline(std::cin, message);
 
-        if (message == "SS") {
+//         if (message == "SS") {
 
-            if (clients.size() == 0) {
-                printf("Wait for clients pls.\n");
-                continue;
-            }
 
-            closeListen(ListenThread, listenSocket);
+//         }
 
-            printf("Enter topic of discussion:\n");
-            std::string topic;
-            getline(std::cin, topic);
-            topic = "STP:" + topic;
-            sendOneMessage(clients, topic);
+//         WaitForSingleObject(mutexSendMsg, INFINITE);
+//         sendMessageQueue.push(message);
+//         ReleaseMutex(mutexSendMsg);
+//     }
 
-            printf("Enter time allocated for ideas sending:\n");
-            std::string timer;
-            getline(std::cin, timer);
-            timer = "STM:" + timer;
-            sendOneMessage(clients, timer);
+//     return exitThreadCode;
+// }
 
-            sendOneMessage(clients, message);
-            printf("Sending session started successfully.\n"
-                   "Enter \"ES\" to end the sending session \n"
-                   "and move to the voting session.\n");
-
-            DWORD  allAMThreadID;
-            allAMThread = CreateThread(
-                NULL,
-                0,
-                checkAllAM,
-                &clients,
-                0,
-                &allAMThreadID
-                );
-            continue;
-        }
-
-        WaitForSingleObject(mutexSendMsg, INFINITE);
-        sendMessageQueue.push(message);
-        ReleaseMutex(mutexSendMsg);
-    }
-
-    return exitThreadCode;
-}
-
-int getUID(int* UID) {
+int getUID(int* UID)
+{
 
     WaitForSingleObject(mutexUI, INFINITE);
     int tempUID = ++(*UID);
@@ -138,7 +108,8 @@ int getUID(int* UID) {
     return tempUID;
 }
 
-DWORD WINAPI rankIdeas(LPVOID param) {
+DWORD WINAPI rankIdeas(LPVOID param)
+{
     while (isRanking) {
         if (isVoted) {
             WaitForSingleObject(mutexIdeas, INFINITY);
@@ -222,7 +193,6 @@ DWORD WINAPI listenClients(LPVOID param) {
         SOCKET tempClientSocket = INVALID_SOCKET;
         tempClientSocket = accept(*listenSocket, NULL, NULL);
 
-
         if (tempClientSocket == INVALID_SOCKET) {
             printf("accept failed with error: %d\n", WSAGetLastError());
             closesocket(*listenSocket);
@@ -250,6 +220,7 @@ DWORD WINAPI listenClients(LPVOID param) {
             printf("Connected client #%d\n", newClient->clientUID);
             clients.push_back(*newClient);
         }
+
     }
     closesocket(*listenSocket);
 }
@@ -454,51 +425,58 @@ DWORD WINAPI sendMessages(LPVOID param) {
         sendMessageQueue.pop();
         ReleaseMutex(mutexSendMsg);
 
-        if (message == "EXT") break;
-        if (message == "CLN") {
+        // if (message == "EXT") break;
+        // if (message == "CLN") {
+        //     closeListen(ListenThread, listenSocket);
+
+        // } else if (message == "DCL") {
+        //     printf("Enter UID of client to delete: ");
+        //     int UID;
+        //     scanf_s("%d", &UID);
+        //     closeClientWithUID(*clients, UID);
+
+        //} else if (message == "SS") {
+        if (message == "SS") {
+
+            if (clients->size() == 0) {
+                printf("Wait for clients pls.\n");
+                continue;
+            }
+
             closeListen(ListenThread, listenSocket);
 
-        } else if (message == "DCL") {
-            printf("Enter UID of client to delete: ");
-            int UID;
-            scanf_s("%d", &UID);
-            closeClientWithUID(*clients, UID);
+            // printf("Enter topic of discussion:\n");
+            std::string topic;
+            // getline(std::cin, topic);
+            topic = "STP:" + sessionTopic;
+            sendOneMessage(*clients, topic);
 
-        } else if (message == "SS") {
-            //closeListen(ListenThread, listenSocket);
+            qDebug() << "Enter time allocated for ideas sending:\n";
+            std::string timer;
+            timer = "STM:" + std::to_string(sessionTimeSec);
+            sendOneMessage(*clients, timer);
 
-            //printf("Enter topic of discussion:\n");
-            //std::string topic;
-            //getline(std::cin, topic);
-            //topic = "STP:" + topic;
-            //sendOneMessage(*clients, topic);
+            sendOneMessage(*clients, message);
+            qDebug() << "Sending session started successfully.\n"
+                        "Enter \"ES\" to end the sending session \n"
+                        "and move to the voting session.\n";
 
-            //printf("Enter time allocated for ideas sending:\n");
-            //std::string timer;
-            //getline(std::cin, timer);
-            //timer = "STM:" + timer;
-            //sendOneMessage(*clients, timer);
+            DWORD  allAMThreadID;
+            allAMThread = CreateThread(
+                NULL,
+                0,
+                checkAllAM,
+                clients,
+                0,
+                &allAMThreadID
+                );
+            continue;
 
-            //sendOneMessage(*clients, message);
-            //printf("Sending session started successfully.\n"
-            //       "Enter \"ES\" to end the sending session \n"
-            //       "and move to the voting session.\n");
-
-            //DWORD  allAMThreadID;
-            //allAMThread = CreateThread(
-            //    NULL,
-            //    0,
-            //    checkAllAM,
-            //    clients,
-            //    0,
-            //    &allAMThreadID
-            //);
-
-        } else if (message == "DID") {
-            printf("Enter TID of idea to delete: ");
-            int TID;
-            scanf_s("%d", &TID);
-            deleteIdea(TID);
+        // } else if (message == "DID") {
+        //     printf("Enter TID of idea to delete: ");
+        //     int TID;
+        //     scanf_s("%d", &TID);
+        //     deleteIdea(TID);
 
         } else if (message == "ES") {
 
@@ -513,7 +491,7 @@ DWORD WINAPI sendMessages(LPVOID param) {
             sendOneMessage(*clients, "ES");
 
             while (true) {
-                if (allAM(*clients) || timerOut) break;
+                if (allAM(*clients)) break;
                 Sleep(500);
             }
             nonAM(*clients);
@@ -549,6 +527,7 @@ DWORD WINAPI sendMessages(LPVOID param) {
                 );
             printf("SV\n");
             sendOneMessage(*clients, "SV");
+            progStage = "SV";
             printf("Voting session successfully started.\n"
                    "Waiting for clients voices...\n\n"
                    "Enter \"EV\" to end the voting session \n"

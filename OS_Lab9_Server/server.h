@@ -66,6 +66,10 @@ typedef struct idea {
 
 std::vector<Idea> ideaVector;
 
+std::string sessionTopic;
+int sessionTimeSec = 0;
+
+std::string progStage = "DS";
 
 int UID = 0;
 int TID = 0;
@@ -115,7 +119,7 @@ void sendOneMessage(std::vector<Client>& clients, std::string message);
 
 void deleteIdea(int TID);
 
-DWORD WINAPI inputMessages(LPVOID param);
+// DWORD WINAPI inputMessages(LPVOID param);
 
 DWORD WINAPI checkAllAM(LPVOID param);
 

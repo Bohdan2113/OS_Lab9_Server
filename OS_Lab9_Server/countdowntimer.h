@@ -11,7 +11,7 @@ class CountdownTimer : public QWidget {
     Q_OBJECT
 
 public:
-    CountdownTimer(int minutes, int seconds, QLabel* label, QWidget* nextPage, QStackedWidget* stackedWidget);
+    CountdownTimer(int minutes, int seconds, QLabel* label, std::function<void()> callback);
     ~CountdownTimer();
 
 private slots:
@@ -20,12 +20,11 @@ private slots:
 private:
     void updateDisplay();
 
+    std::function<void()> onCompleteCallback;
     int minutes;
     int seconds;
     QLabel* timeLabel;
     QTimer* timer;
-    QWidget* nextPage;
-    QStackedWidget* stackedWidget;
 };
 
 #endif // COUNTDOWNTIMER_H
