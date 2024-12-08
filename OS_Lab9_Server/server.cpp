@@ -12,7 +12,7 @@ DWORD WINAPI receiveServent(LPVOID param)
             revcMessageQueue.pop();
             ReleaseMutex(mutexRecvMsg);
 
-            printf("\t\t\tClient #%d: %s\n", msg.clientUID, msg.message);
+            // printf("\t\t\tClient #%d: %s\n", msg.clientUID, msg.message);
 
             if (strlen(msg.message) >= 4) {
                 if (strncmp(msg.message, "CCN:", 4) == 0) {
@@ -57,6 +57,7 @@ DWORD WINAPI receiveServent(LPVOID param)
             }
 
         }
+        else Sleep(100);
     }
 }
 
@@ -74,6 +75,8 @@ DWORD WINAPI checkAllAM(LPVOID param)
     WaitForSingleObject(mutexSendMsg, INFINITE);
     sendMessageQueue.push("ES");
     ReleaseMutex(mutexSendMsg);
+
+    timerOut = false;
 
     return exitThreadCode;
 }
@@ -159,17 +162,17 @@ DWORD WINAPI receiveMessages(LPVOID param) {
 
         } else if (iResult == 0) {
 
-            printf("Connection successfully closed by client #%d\n", client->clientUID);
+            // printf("Connection successfully closed by client #%d\n", client->clientUID);
             exitCode = EXIT_CODE_RECV;
             break;
         } else {
-            printf("recv from client #%d failed with error code: %d\n", client->clientUID, WSAGetLastError());
+            // printf("recv from client #%d failed with error code: %d\n", client->clientUID, WSAGetLastError());
             exitCode = RESV_MESS_FAIL;
             break;
         }
     }
 
-    printf("Attempting to delete Client #%d from vector...\n", client->clientUID);
+    // printf("Attempting to delete Client #%d from vector...\n", client->clientUID);
 
     WaitForSingleObject(mutexClients, INFINITE);
     int isDeleted = false;
@@ -181,7 +184,7 @@ DWORD WINAPI receiveMessages(LPVOID param) {
         }
     }
     ReleaseMutex(mutexClients);
-    if (!isDeleted) printf("Client #%d not found to delete in vector\n", client->clientUID);
+    // if (!isDeleted) printf("Client #%d not found to delete in vector\n", client->clientUID);
 
     return exitCode;
 }
@@ -194,7 +197,7 @@ DWORD WINAPI listenClients(LPVOID param) {
         tempClientSocket = accept(*listenSocket, NULL, NULL);
 
         if (tempClientSocket == INVALID_SOCKET) {
-            printf("accept failed with error: %d\n", WSAGetLastError());
+            // printf("accept failed with error: %d\n", WSAGetLastError());
             closesocket(*listenSocket);
             WSACleanup();
             return 1;
@@ -213,11 +216,11 @@ DWORD WINAPI listenClients(LPVOID param) {
             );
 
         if (newClient->threadHandle == NULL) {
-            printf("Failed to create thread for client #%d.\n", newClient->clientUID);
+            // printf("Failed to create thread for client #%d.\n", newClient->clientUID);
             closesocket(tempClientSocket);
         }
         else {
-            printf("Connected client #%d\n", newClient->clientUID);
+            // printf("Connected client #%d\n", newClient->clientUID);
             clients.push_back(*newClient);
         }
 
@@ -257,21 +260,21 @@ int openListen() {
     do {
         listenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
         if (listenSocket == INVALID_SOCKET) {
-            printf("socket failed with error: %ld\n", WSAGetLastError());
+            // printf("socket failed with error: %ld\n", WSAGetLastError());
             exitCode = 1;
             break;
         }
 
         iResult = bind(listenSocket, result->ai_addr, (int)result->ai_addrlen);
         if (iResult == SOCKET_ERROR) {
-            printf("bind failed with error: %d\n", WSAGetLastError());
+            // printf("bind failed with error: %d\n", WSAGetLastError());
             exitCode = 1;
             break;
         }
 
         iResult = listen(listenSocket, SOMAXCONN);
         if (iResult == SOCKET_ERROR) {
-            printf("listen failed with error: %d\n", WSAGetLastError());
+            // printf("listen failed with error: %d\n", WSAGetLastError());
             exitCode = 1;
             break;
         }
@@ -307,15 +310,15 @@ void closeOneReceive(std::vector<Client>& clients, int i) {
         if (exitCodeThread == STILL_ACTIVE) {
             iResult = shutdown(client.clientSocket, SD_BOTH);
             if (iResult == SOCKET_ERROR) {
-                printf("Shutdown client #%d failed with error code: %d\n", client.clientUID, WSAGetLastError());
+                // printf("Shutdown client #%d failed with error code: %d\n", client.clientUID, WSAGetLastError());
             } else {
-                printf("Connection with client #%d successfully terminated by server\n", client.clientUID);
+                // printf("Connection with client #%d successfully terminated by server\n", client.clientUID);
             }
         } else {
-            printf("Client #%d already has leaved session", client.clientUID);
+            // printf("Client #%d already has leaved session", client.clientUID);
         }
     } else {
-        printf("GetExitCodeThread client #%d failed with error code: %d\n", client.clientUID, GetLastError());
+        // printf("GetExitCodeThread client #%d failed with error code: %d\n", client.clientUID, GetLastError());
     }
     TerminateThread(client.threadHandle, 0);
     delFromVector(clients,i);
@@ -324,7 +327,7 @@ void closeOneReceive(std::vector<Client>& clients, int i) {
 }
 
 void closeAllReceive(std::vector<Client>& clients, HANDLE& mutexClients) {
-    printf("Closing connection with all clients...\n");
+    // printf("Closing connection with all clients...\n");
     WaitForSingleObject(mutexClients, INFINITE);
     for (int i = 0; i < clients.size(); i++) {
         closeOneReceive(clients, i);
@@ -339,7 +342,7 @@ void delFromVector(std::vector<Client>& clients, int i) {
     shutdown(clients[i].clientSocket, SD_BOTH);
     closesocket(clients[i].clientSocket);
 
-    printf("Client #%d deleted from vector\n", clients[i].clientUID);
+    // printf("Client #%d deleted from vector\n", clients[i].clientUID);
     clients.erase(clients.begin() + i);
 }
 
@@ -355,7 +358,7 @@ void closeClientWithUID(std::vector<Client>& clients, int UID) {
     }
     ReleaseMutex(mutexClients);
     if (!isFound) {
-        printf("Unknown UID of user\n");
+        // printf("Unknown UID of user\n");
     }
 }
 
@@ -367,7 +370,7 @@ void deleteIdea(int TID) {
         }),
         ideaVector.end()
         );
-    printf("Idea with TID: %d was sucessfully deleted\n", TID);
+    // printf("Idea with TID: %d was sucessfully deleted\n", TID);
     ReleaseMutex(mutexIdeas);
 }
 
@@ -384,18 +387,18 @@ void sendOneMessage(std::vector<Client>& clients, std::string message) {
                 iResult = send(clients[i].clientSocket, message.c_str(), (int)message.length(), 0);
 
                 if (iResult == SOCKET_ERROR) {
-                    printf("Send message failed to client #%d with error code: %d\n", clients[i].clientUID, WSAGetLastError());
+                    // printf("Send message failed to client #%d with error code: %d\n", clients[i].clientUID, WSAGetLastError());
                 }
                 else {
                     isContinue = true;
                 }
             }
             else {
-                printf("Client #%d already has leaved session", clients[i].clientUID);
+                // printf("Client #%d already has leaved session", clients[i].clientUID);
             }
         }
         else {
-            printf("GetExitCodeThread client #%d failed with error code: %d\n", clients[i].clientUID, GetLastError());
+            // printf("GetExitCodeThread client #%d failed with error code: %d\n", clients[i].clientUID, GetLastError());
         }
 
         if (!isContinue) {
@@ -439,7 +442,7 @@ DWORD WINAPI sendMessages(LPVOID param) {
         if (message == "SS") {
 
             if (clients->size() == 0) {
-                printf("Wait for clients pls.\n");
+                // printf("Wait for clients pls.\n");
                 continue;
             }
 
@@ -486,9 +489,10 @@ DWORD WINAPI sendMessages(LPVOID param) {
                 TerminateThread(allAMThread, 0);
             }
 
-            printf("The sending session is complete.\n"
-                   "Waiting to receive all customer messages...\n");
+            // printf("The sending session is complete.\n"
+            //        "Waiting to receive all customer messages...\n");
             sendOneMessage(*clients, "ES");
+            progStage = "ES";
 
             while (true) {
                 if (allAM(*clients)) break;
@@ -496,8 +500,8 @@ DWORD WINAPI sendMessages(LPVOID param) {
             }
             nonAM(*clients);
 
-            printf("All user ideas successfully received.\n"
-                   "Sending ideas list to clients...\n");
+            // printf("All user ideas successfully received.\n"
+            //        "Sending ideas list to clients...\n");
 
             WaitForSingleObject(mutexIdeas, INFINITY);
             for (int i = 0; i < ideaVector.size(); i++) {
@@ -513,7 +517,7 @@ DWORD WINAPI sendMessages(LPVOID param) {
             }
             ReleaseMutex(mutexIdeas);
 
-            printf("Ideas list successfully sent.\n");
+            // printf("Ideas list successfully sent.\n");
 
             DWORD threadID_rank;
             isRanking = true;
@@ -525,31 +529,36 @@ DWORD WINAPI sendMessages(LPVOID param) {
                 0,
                 &threadID_rank
                 );
-            printf("SV\n");
+            // printf("SV\n");
             sendOneMessage(*clients, "SV");
             progStage = "SV";
-            printf("Voting session successfully started.\n"
-                   "Waiting for clients voices...\n\n"
-                   "Enter \"EV\" to end the voting session \n"
-                   "and move to the results of session.\n");
+            // printf("Voting session successfully started.\n"
+            //        "Waiting for clients voices...\n\n"
+            //        "Enter \"EV\" to end the voting session \n"
+            //        "and move to the results of session.\n");
 
             while (true) {
                 if (allAM(*clients) || timerOut) break;
                 Sleep(500);
             }
             nonAM(*clients);
+            timerOut = false;
 
             WaitForSingleObject(mutexSendMsg, INFINITE);
+            printf("Send EV\n");
             sendMessageQueue.push("EV");
             ReleaseMutex(mutexSendMsg);
 
         } else if (message == "EV") {
-            printf("Voting session ended.\n"
-                   "Sending results to clients...\n");
+            // printf("Voting session ended.\n"
+            //        "Sending results to clients...\n");
             sendOneMessage(*clients, "EV");
 
             Sleep(RERANK_TIME);
             isRanking = false;
+
+            printf("ProgStage = EV\n");
+            progStage = "EV";
 
             for (int i = 0; i < (ideaVector.size() < 3 ? ideaVector.size() : 3); i++) {
                 std::string idea;
@@ -576,19 +585,19 @@ DWORD WINAPI sendMessages(LPVOID param) {
                 sendOneMessage(*clients, idea);
             }
             Sleep(100);
-            printf("Result successfully send.\n"
-                   "Ending the current session...\n");
+            // printf("Result successfully send.\n"
+            //        "Ending the current session...\n");
 
             sendOneMessage(*clients, "TS");
             closeAllReceive(*clients, mutexClients);
-            printf("TS\n");
+            // printf("TS\n");
 
-            printf("Current session successfully ended.\n"
-                   "Enter \"RS\" to start new session.\n");
+            // printf("Current session successfully ended.\n"
+            //        "Enter \"RS\" to start new session.\n");
 
         } else if (message == "RS") {
             // sendOneMessage(*clients, "RS");
-            printf("Trying to start new session...\n");
+            // printf("Trying to start new session...\n");
             ideaVector.clear();
             clients->clear();
             TID = 0;
@@ -596,11 +605,11 @@ DWORD WINAPI sendMessages(LPVOID param) {
             isRanking = false;
             iResult = openListen();
             if (!iResult) {
-                printf("New session started successfully.\n"
-                       "Waiting clients to connect...\n\n"
-                       "Enter \"SS\" to start sending session.\n");
+                // printf("New session started successfully.\n"
+                //        "Waiting clients to connect...\n\n"
+                //        "Enter \"SS\" to start sending session.\n");
             } else {
-                printf("Error while starting new session.\n");
+                // printf("Error while starting new session.\n");
             }
         }
     }

@@ -36,6 +36,8 @@ private slots:
 
     void updateClientsTable();
     void updateIdeasTable();
+    void updateVoteTable();
+
     void OutputPodium();
 
 private:
