@@ -33,7 +33,7 @@
 #define SEND_MESS_FAIL 1
 #define RESV_MESS_FAIL 1
 
-#define RERANK_TIME 1000
+#define RERANK_TIME 500
 #define SLEEP_TIME 500
 
 typedef struct clnt {
@@ -66,6 +66,10 @@ typedef struct idea {
 
 std::vector<Idea> ideaVector;
 
+std::string sessionTopic;
+int sessionTimeSec = 0;
+
+std::string progStage = "DS";
 
 int UID = 0;
 int TID = 0;
@@ -115,7 +119,7 @@ void sendOneMessage(std::vector<Client>& clients, std::string message);
 
 void deleteIdea(int TID);
 
-DWORD WINAPI inputMessages(LPVOID param);
+// DWORD WINAPI inputMessages(LPVOID param);
 
 DWORD WINAPI checkAllAM(LPVOID param);
 

@@ -1,6 +1,11 @@
 #include "server.h"
 
-DWORD WINAPI receiveServent(LPVOID param) {
+#define _CRT_SECURE_NO_WARNINGS
+#include <QDebug>
+
+DWORD WINAPI receiveServent(LPVOID param)
+{
+    printf("THREAD receiveServent STATED\n");
     std::vector<Client>* clients = (std::vector<Client>*)param;
 
     while (true) {
@@ -11,26 +16,33 @@ DWORD WINAPI receiveServent(LPVOID param) {
             revcMessageQueue.pop();
             ReleaseMutex(mutexRecvMsg);
 
-            printf("\t\t\tClient #%d: %s\n", msg.clientUID, msg.message);
+            printf("Receive message: Client #%d: %s\n", msg.clientUID, msg.message);
 
             if (strlen(msg.message) >= 4) {
                 if (strncmp(msg.message, "CCN:", 4) == 0) {
                     memmove(msg.message, msg.message + 4, strlen(msg.message) - 3);
+
+                    bool isFound = false;
                     WaitForSingleObject(mutexClients, INFINITY);
                     for (auto& client : *clients) {
                         if (client.clientUID == msg.clientUID) {
                             strncpy_s(client.name, DEFAULT_NAMELEN, msg.message, DEFAULT_NAMELEN);
+                            std::cout << "Client #" << client.clientUID << " name set: " << client.name << "\n";
+                            isFound = true;
                             break;
                         }
                     }
                     ReleaseMutex(mutexClients);
+                    if (!isFound)
+                        printf("Error name setting. Can`t find Client#%d\n", msg.clientUID);
                 }
                 else if (strncmp(msg.message, "TGH:", 4) == 0) {
                     memmove(msg.message, msg.message + 4, strlen(msg.message) - 3);
 
-                    Idea idea = { getUID(&TID), NULL, 0 };
+                    Idea idea = { getUID(&TID), {0, ""}, 0 };
                     idea.message.clientUID = msg.clientUID;
                     strncpy_s(idea.message.message, sizeof(idea.message.message), msg.message, _TRUNCATE);
+                    std::cout << "Add new idea #" << idea.ideaTID << "from Client #" << idea.message.clientUID << " : " << idea.message.message << "\n";
 
                     WaitForSingleObject(mutexIdeas, INFINITY);
                     ideaVector.push_back(idea);
@@ -38,7 +50,9 @@ DWORD WINAPI receiveServent(LPVOID param) {
                 }
                 else if (strncmp(msg.message, "RNK:", 4) == 0) {
                     memmove(msg.message, msg.message + 4, strlen(msg.message) - 3);
+
                     isVoted = true;
+                    bool isFound = false;
                     WaitForSingleObject(mutexIdeas, INFINITY);
                     char* token = strtok(msg.message, " ");
                     while (token != nullptr) {
@@ -46,20 +60,34 @@ DWORD WINAPI receiveServent(LPVOID param) {
                         for (int i = 0; i < ideaVector.size(); i++) {
                             if (ideaVector[i].ideaTID == TID) {
                                 ideaVector[i].cntVoice++;
+                                std::cout << "New vote counted: Idea #" << ideaVector[i].ideaTID << " voices new value: " << ideaVector[i].cntVoice << "\n";
+                                isFound = true;
                                 break;
                             }
                         }
                         token = strtok(nullptr, " ");
+                        if (!isFound)
+                            printf("Error new vote counting. Can`t find Idea#%d\n", TID);
                     }
                     ReleaseMutex(mutexIdeas);
                 }
+                else {
+                    printf("Unknown command in receiveServent\n");
+                }
             }
-
+            else {
+                printf("Too short command in receiveServent\n");
+            }
+        }
+        else {
+            Sleep(250);
         }
     }
+    printf("THREAD receiveServent ENDED\n");
 }
 
-DWORD WINAPI checkAllAM(LPVOID param) {
+DWORD WINAPI checkAllAM(LPVOID param)
+{
     std::vector<Client>* clients = (std::vector<Client>*)param;
 
     DWORD exitThreadCode = 0;
@@ -69,76 +97,25 @@ DWORD WINAPI checkAllAM(LPVOID param) {
     }
     nonAM(*clients);
 
+    if (timerOut)
+        printf("timerOut in sending session.\n");
+    else
+        printf("allAM in sending session.\n");
+
+    printf("Push sendMessage: ES\n");
+
     WaitForSingleObject(mutexSendMsg, INFINITE);
     sendMessageQueue.push("ES");
     ReleaseMutex(mutexSendMsg);
 
-    return exitThreadCode;
-}
-
-DWORD WINAPI inputMessages(LPVOID param) {
-    DWORD exitThreadCode = 0;
-
-    while (true) {
-        std::string message;
-        getline(std::cin, message);
-
-        if (message == "SS") {
-
-            if (clients.size() == 0) {
-                printf("Wait for clients pls.\n");
-                continue;
-            }
-
-            closeListen(ListenThread, listenSocket);
-
-            printf("Enter topic of discussion:\n");
-            std::string topic;
-            getline(std::cin, topic);
-            topic = "STP:" + topic;
-            sendOneMessage(clients, topic);
-
-            printf("Enter time allocated for ideas sending:\n");
-            std::string timer;
-            getline(std::cin, timer);
-            timer = "STM:" + timer;
-            sendOneMessage(clients, timer);
-
-            sendOneMessage(clients, message);
-            printf("Sending session started successfully.\n"
-                   "Enter \"ES\" to end the sending session \n"
-                   "and move to the voting session.\n");
-
-            DWORD  allAMThreadID;
-            allAMThread = CreateThread(
-                NULL,
-                0,
-                checkAllAM,
-                &clients,
-                0,
-                &allAMThreadID
-                );
-            continue;
-        }
-
-        WaitForSingleObject(mutexSendMsg, INFINITE);
-        sendMessageQueue.push(message);
-        ReleaseMutex(mutexSendMsg);
-    }
+    timerOut = false;
 
     return exitThreadCode;
 }
 
-int getUID(int* UID) {
-
-    WaitForSingleObject(mutexUI, INFINITE);
-    int tempUID = ++(*UID);
-    ReleaseMutex(mutexUI);
-
-    return tempUID;
-}
-
-DWORD WINAPI rankIdeas(LPVOID param) {
+DWORD WINAPI rankIdeas(LPVOID param)
+{
+    UNREFERENCED_PARAMETER(param);
     while (isRanking) {
         if (isVoted) {
             WaitForSingleObject(mutexIdeas, INFINITY);
@@ -146,6 +123,7 @@ DWORD WINAPI rankIdeas(LPVOID param) {
                 return a.cntVoice > b.cntVoice;
             });
             ReleaseMutex(mutexIdeas);
+            isVoted = false;
         }
         Sleep(RERANK_TIME);
     }
@@ -156,7 +134,7 @@ DWORD WINAPI receiveMessages(LPVOID param) {
     Client* client = (Client*)param;
 
     char recvBuf[DEFAULT_BUFLEN];
-    int recvBufLen = DEFAULT_BUFLEN;
+    int  recvBufLen = DEFAULT_BUFLEN;
 
     int iResult;
     int exitCode = 0;
@@ -169,30 +147,34 @@ DWORD WINAPI receiveMessages(LPVOID param) {
 
             std::string message(recvBuf);
             if (message == "AM") {
+                bool isFound = false;
                 WaitForSingleObject(mutexClients, INFINITE);
                 for (int i = 0; i < clients.size(); i++) {
                     if (clients[i].clientUID == client->clientUID) {
+                        printf("Client #%d is AM\n", clients[i].clientUID);
                         clients[i].isAM = true;
+                        isFound = true;
                         break;
                     }
                 }
                 ReleaseMutex(mutexClients);
-                continue;
+                if (!isFound)
+                    printf("Error setting AM. Can`t find Client #%d\n", client->clientUID);
             }
+            else {
+                ExtMessage msg = { client->clientUID, "" };
+                strncpy_s(msg.message, iResult + 1, recvBuf, iResult);
 
-            WaitForSingleObject(mutexRecvMsg, INFINITE);
-            ExtMessage msg = { client->clientUID, "" };
-            strncpy_s(msg.message, iResult + 1, recvBuf, iResult);
-            revcMessageQueue.push(msg);
-            ReleaseMutex(mutexRecvMsg);
-
+                WaitForSingleObject(mutexRecvMsg, INFINITE);
+                revcMessageQueue.push(msg);
+                ReleaseMutex(mutexRecvMsg);
+            }
         } else if (iResult == 0) {
-
-            printf("Connection successfully closed by client #%d\n", client->clientUID);
+            printf("Connection successfully closed by Client #%d\n", client->clientUID);
             exitCode = EXIT_CODE_RECV;
             break;
         } else {
-            printf("recv from client #%d failed with error code: %d\n", client->clientUID, WSAGetLastError());
+            printf("recv from Client #%d failed with error code: %d\n", client->clientUID, WSAGetLastError());
             exitCode = RESV_MESS_FAIL;
             break;
         }
@@ -221,7 +203,6 @@ DWORD WINAPI listenClients(LPVOID param) {
     while (true) {
         SOCKET tempClientSocket = INVALID_SOCKET;
         tempClientSocket = accept(*listenSocket, NULL, NULL);
-
 
         if (tempClientSocket == INVALID_SOCKET) {
             printf("accept failed with error: %d\n", WSAGetLastError());
@@ -254,6 +235,15 @@ DWORD WINAPI listenClients(LPVOID param) {
     closesocket(*listenSocket);
 }
 
+int getUID(int* UID)
+{
+    WaitForSingleObject(mutexUI, INFINITE);
+    int tempUID = ++(*UID);
+    ReleaseMutex(mutexUI);
+
+    return tempUID;
+}
+
 bool allAM(std::vector<Client>& clients) {
     bool isAllAM = true;
     WaitForSingleObject(mutexClients, INFINITE);
@@ -263,19 +253,21 @@ bool allAM(std::vector<Client>& clients) {
             break;
         }
     }
+
+    if (isAllAM)
+        printf("AllAM = true\n");
+
     ReleaseMutex(mutexClients);
 
     return isAllAM;
 }
-void nonAM(std::vector<Client>& clients) {
 
+void nonAM(std::vector<Client>& clients) {
     WaitForSingleObject(mutexClients, INFINITE);
     for (int i = 0; i < clients.size(); i++) {
         clients[i].isAM = false;
     }
     ReleaseMutex(mutexClients);
-
-    return;
 }
 
 int openListen() {
@@ -283,10 +275,12 @@ int openListen() {
     int iResult = 0;
     int exitCode = 0;
 
+    printf("Trying to open listening...\n");
+
     do {
         listenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
         if (listenSocket == INVALID_SOCKET) {
-            printf("socket failed with error: %ld\n", WSAGetLastError());
+            printf("socket failed with error: %d\n", WSAGetLastError());
             exitCode = 1;
             break;
         }
@@ -314,7 +308,16 @@ int openListen() {
             0,
             &threadID_listen
             );
+
+        if (ListenThread == NULL) {
+            printf("Failed to create listening thread with error code: %d\n", (int)GetLastError());
+        }
     } while (false);
+
+    if (exitCode == 0)
+        printf("Listening successfully opened\n");
+    else
+        printf("Error opening listening\n");
 
     return exitCode;
 }
@@ -325,8 +328,19 @@ void closeListen(HANDLE& ListenThread, SOCKET& listenSocket) {
     shutdown(listenSocket, SD_BOTH);
     closesocket(listenSocket);
     listenSocket = INVALID_SOCKET;
+    printf("Listening closed\n");
 }
 
+void closeAllReceive(std::vector<Client>& clients, HANDLE& mutexClients) {
+    printf("Closing connection with all clients...\n");
+    WaitForSingleObject(mutexClients, INFINITE);
+    for (int i = 0; i < clients.size(); i++) {
+        closeOneReceive(clients, i);
+        i--;
+    }
+    ReleaseMutex(mutexClients);
+    printf("Connection with all clients successfully closed\n");
+}
 
 void closeOneReceive(std::vector<Client>& clients, int i) {
     int iResult = 0;
@@ -338,65 +352,77 @@ void closeOneReceive(std::vector<Client>& clients, int i) {
             if (iResult == SOCKET_ERROR) {
                 printf("Shutdown client #%d failed with error code: %d\n", client.clientUID, WSAGetLastError());
             } else {
-                printf("Connection with client #%d successfully terminated by server\n", client.clientUID);
+                printf("Connection with client #%d successfully closed by server\n", client.clientUID);
             }
         } else {
             printf("Client #%d already has leaved session", client.clientUID);
         }
     } else {
-        printf("GetExitCodeThread client #%d failed with error code: %d\n", client.clientUID, GetLastError());
+        printf("GetExitCodeThread client #%d failed with error code: %d\n", client.clientUID, (int)GetLastError());
     }
-    TerminateThread(client.threadHandle, 0);
+
+
+    // if (GetExitCodeThread(client.threadHandle, &exitCodeThread)) {
+    //     if (exitCodeThread == STILL_ACTIVE) {
+    //         std::cout << "Trying to terminate TerminateThread...\n";
+    //         TerminateThread(client.threadHandle, 0);
+    //         std::cout << "Thread terminated\n";
+    //     }
+    //     else {
+    //         std::cout << "Thread is not alive\n";
+    //     }
+    // }
+
     delFromVector(clients,i);
 
     return;
 }
 
-void closeAllReceive(std::vector<Client>& clients, HANDLE& mutexClients) {
-    printf("Closing connection with all clients...\n");
-    WaitForSingleObject(mutexClients, INFINITE);
-    for (int i = 0; i < clients.size(); i++) {
-        closeOneReceive(clients, i);
-        i--;
-    }
-    ReleaseMutex(mutexClients);
-}
-
 void delFromVector(std::vector<Client>& clients, int i) {
+    std::cout << "Trying to delete from vector...\n";
     CloseHandle(clients[i].threadHandle);
-
+    std::cout << "CloseHandle done\n";
     shutdown(clients[i].clientSocket, SD_BOTH);
+    std::cout << "shutdown done\n";
     closesocket(clients[i].clientSocket);
+    std::cout << "closesocket done\n";
 
-    printf("Client #%d deleted from vector\n", clients[i].clientUID);
+    printf("Client deleted from vector\n");
     clients.erase(clients.begin() + i);
 }
 
 void closeClientWithUID(std::vector<Client>& clients, int UID) {
     bool isFound = false;
-    WaitForSingleObject(mutexClients, INFINITY);
+
     for (int i = 0; i < clients.size(); i++) {
         if (clients[i].clientUID == UID) {
+            printf("Client #%d found to delete.\n", UID);
             isFound = true;
             closeOneReceive(clients, i);
+            printf("Client #%d closeOneReceive done.\n", UID);
             break;
         }
     }
-    ReleaseMutex(mutexClients);
+
     if (!isFound) {
-        printf("Unknown UID of user\n");
+        printf("Error deleting Client #%d. Unknown UID\n", UID);
     }
 }
 
 void deleteIdea(int TID) {
     WaitForSingleObject(mutexIdeas, INFINITY);
+    int prevSize = (int)ideaVector.size();
     ideaVector.erase(
         std::remove_if(ideaVector.begin(), ideaVector.end(), [TID](const Idea& idea) {
             return idea.ideaTID == TID;
         }),
         ideaVector.end()
         );
-    printf("Idea with TID: %d was sucessfully deleted\n", TID);
+    if (prevSize > (int)ideaVector.size())
+        printf("Idea with TID: %d was sucessfully deleted\n", TID);
+    else
+        printf("Error deleting Idea #%d. Unknown TID\n", TID);
+
     ReleaseMutex(mutexIdeas);
 }
 
@@ -404,14 +430,13 @@ void sendOneMessage(std::vector<Client>& clients, std::string message) {
     int iResult;
     DWORD exitCodeThread = 0;
 
+    Sleep(300);
     WaitForSingleObject(mutexClients, INFINITE);
-
     for (int i = 0; i < clients.size(); i++) {
         int isContinue = false;
         if (GetExitCodeThread(clients[i].threadHandle, &exitCodeThread)) {
             if (exitCodeThread == STILL_ACTIVE) {
                 iResult = send(clients[i].clientSocket, message.c_str(), (int)message.length(), 0);
-
                 if (iResult == SOCKET_ERROR) {
                     printf("Send message failed to client #%d with error code: %d\n", clients[i].clientUID, WSAGetLastError());
                 }
@@ -424,7 +449,7 @@ void sendOneMessage(std::vector<Client>& clients, std::string message) {
             }
         }
         else {
-            printf("GetExitCodeThread client #%d failed with error code: %d\n", clients[i].clientUID, GetLastError());
+            printf("GetExitCodeThread client #%d failed with error code: %d\n", clients[i].clientUID, (int)GetLastError());
         }
 
         if (!isContinue) {
@@ -433,6 +458,7 @@ void sendOneMessage(std::vector<Client>& clients, std::string message) {
             i--;
         }
     }
+    std::cout << "Send message: " << message << "\n";
     ReleaseMutex(mutexClients);
 }
 
@@ -442,7 +468,9 @@ DWORD WINAPI sendMessages(LPVOID param) {
     int iResult;
 
     DWORD exitCode = 0;
-    DWORD exitCodeThread = 0;
+
+    printf("\nTHREAD sendMessages started\n"
+           "Waiting \"SS\" to start sending session.\n\n");
 
     while (true) {
         while (true) {
@@ -454,54 +482,41 @@ DWORD WINAPI sendMessages(LPVOID param) {
         sendMessageQueue.pop();
         ReleaseMutex(mutexSendMsg);
 
-        if (message == "EXT") break;
-        if (message == "CLN") {
+        std::cout << "Popped sendMessage: " << message << "\n";
+
+        if (message == "SS") {
+            if (clients->size() == 0) {
+                printf("Error starting sending session. No Clients connected\n");
+                continue;
+            }
             closeListen(ListenThread, listenSocket);
 
-        } else if (message == "DCL") {
-            printf("Enter UID of client to delete: ");
-            int UID;
-            scanf_s("%d", &UID);
-            closeClientWithUID(*clients, UID);
+            std::string topic;
+            topic = "STP:" + sessionTopic;
+            sendOneMessage(*clients, topic);
 
-        } else if (message == "SS") {
-            //closeListen(ListenThread, listenSocket);
+            std::string timer;
+            timer = "STM:" + std::to_string(sessionTimeSec);
+            sendOneMessage(*clients, timer);
 
-            //printf("Enter topic of discussion:\n");
-            //std::string topic;
-            //getline(std::cin, topic);
-            //topic = "STP:" + topic;
-            //sendOneMessage(*clients, topic);
+            DWORD  allAMThreadID;
+            allAMThread = CreateThread(
+                NULL,
+                0,
+                checkAllAM,
+                clients,
+                0,
+                &allAMThreadID
+                );
 
-            //printf("Enter time allocated for ideas sending:\n");
-            //std::string timer;
-            //getline(std::cin, timer);
-            //timer = "STM:" + timer;
-            //sendOneMessage(*clients, timer);
-
-            //sendOneMessage(*clients, message);
-            //printf("Sending session started successfully.\n"
-            //       "Enter \"ES\" to end the sending session \n"
-            //       "and move to the voting session.\n");
-
-            //DWORD  allAMThreadID;
-            //allAMThread = CreateThread(
-            //    NULL,
-            //    0,
-            //    checkAllAM,
-            //    clients,
-            //    0,
-            //    &allAMThreadID
-            //);
-
-        } else if (message == "DID") {
-            printf("Enter TID of idea to delete: ");
-            int TID;
-            scanf_s("%d", &TID);
-            deleteIdea(TID);
+            sendOneMessage(*clients, message);
+            std::cout << "\nSending session started successfully.\n"
+                         "Waiting \"ES\" to end the sending session \n"
+                         "and move to the voting session.\n\n";
 
         } else if (message == "ES") {
 
+            nonAM(*clients);
             DWORD exitCodeAllAMThread = 0;
             GetExitCodeThread(allAMThread, &exitCodeAllAMThread);
             if (exitCodeAllAMThread == STILL_ACTIVE) {
@@ -509,17 +524,20 @@ DWORD WINAPI sendMessages(LPVOID param) {
             }
 
             printf("The sending session is complete.\n"
-                   "Waiting to receive all customer messages...\n");
+                   "Waiting to receive all customer messages...\n\n");
             sendOneMessage(*clients, "ES");
 
+            printf("ProgStage = ES\n");
+            progStage = "ES";
+
             while (true) {
-                if (allAM(*clients) || timerOut) break;
+                if (allAM(*clients)) break;
                 Sleep(500);
             }
             nonAM(*clients);
 
             printf("All user ideas successfully received.\n"
-                   "Sending ideas list to clients...\n");
+                    "Sending ideas list to clients...\n\n");
 
             WaitForSingleObject(mutexIdeas, INFINITY);
             for (int i = 0; i < ideaVector.size(); i++) {
@@ -527,15 +545,13 @@ DWORD WINAPI sendMessages(LPVOID param) {
                 std::string idea;
                 idea = "TGH:" + std::to_string(ideaVector[i].ideaTID);
                 idea += " " + std::string(ideaVector[i].message.message);
-                std::cout << idea << "\n";
 
                 sendOneMessage(*clients, idea);
                 Sleep(50);
-
             }
             ReleaseMutex(mutexIdeas);
 
-            printf("Ideas list successfully sent.\n");
+            printf("Ideas list successfully sent.\n\n");
 
             DWORD threadID_rank;
             isRanking = true;
@@ -547,30 +563,44 @@ DWORD WINAPI sendMessages(LPVOID param) {
                 0,
                 &threadID_rank
                 );
-            printf("SV\n");
+
             sendOneMessage(*clients, "SV");
-            printf("Voting session successfully started.\n"
-                   "Waiting for clients voices...\n\n"
-                   "Enter \"EV\" to end the voting session \n"
-                   "and move to the results of session.\n");
+            printf("ProgStage = SV\n");
+            progStage = "SV";
+
+            printf("\nVoting session successfully started.\n"
+                   "Waiting \"EV\" to end the voting session \n"
+                   "and move to the results of session.\n\n");
 
             while (true) {
                 if (allAM(*clients) || timerOut) break;
                 Sleep(500);
             }
-            nonAM(*clients);
 
+            if (timerOut)
+                printf("timerOut in voting session.\n");
+            else
+                printf("allAM in voting session.\n");
+
+            nonAM(*clients);
+            timerOut = false;
+
+            printf("Push message: EV\n");
             WaitForSingleObject(mutexSendMsg, INFINITE);
             sendMessageQueue.push("EV");
             ReleaseMutex(mutexSendMsg);
 
         } else if (message == "EV") {
-            printf("Voting session ended.\n"
-                   "Sending results to clients...\n");
             sendOneMessage(*clients, "EV");
+
+            printf("\nVoting session ended.\n"
+                    "Sending results to clients...\n\n");
 
             Sleep(RERANK_TIME);
             isRanking = false;
+
+            printf("ProgStage = EV\n");
+            progStage = "EV";
 
             for (int i = 0; i < (ideaVector.size() < 3 ? ideaVector.size() : 3); i++) {
                 std::string idea;
@@ -593,23 +623,27 @@ DWORD WINAPI sendMessages(LPVOID param) {
                     name                                    + "|" +
                     std::string(ideaVector[i].message.message);
 
-                std::cout << idea << "\n";
                 sendOneMessage(*clients, idea);
             }
             Sleep(100);
-            printf("Result successfully send.\n"
-                   "Ending the current session...\n");
+            printf("\nResult successfully send.\n"
+                    "Ending the current session...\n\n");
 
             sendOneMessage(*clients, "TS");
             closeAllReceive(*clients, mutexClients);
-            printf("TS\n");
 
-            printf("Current session successfully ended.\n"
-                   "Enter \"RS\" to start new session.\n");
+            ideaVector.clear();
+            clients->clear();
+            TID = 0;
+            UID = 0;
+            isRanking = false;
+
+            printf("\nCurrent session successfully ended.\n"
+                    "Waiting \"RS\" to start new session.\n");
 
         } else if (message == "RS") {
-            // sendOneMessage(*clients, "RS");
-            printf("Trying to start new session...\n");
+
+            printf("\nTrying to start new session...\n\n");
             ideaVector.clear();
             clients->clear();
             TID = 0;
@@ -617,11 +651,11 @@ DWORD WINAPI sendMessages(LPVOID param) {
             isRanking = false;
             iResult = openListen();
             if (!iResult) {
-                printf("New session started successfully.\n"
-                       "Waiting clients to connect...\n\n"
-                       "Enter \"SS\" to start sending session.\n");
+                printf("\nNew session started successfully.\n"
+                        "Waiting clients to connect...\n\n"
+                        "Waiting \"SS\" to start sending session.\n\n");
             } else {
-                printf("Error while starting new session.\n");
+                printf("\nError while starting new session.\n");
             }
         }
     }
@@ -629,113 +663,6 @@ DWORD WINAPI sendMessages(LPVOID param) {
     closeListen(ListenThread, listenSocket);
     closeAllReceive(*clients, mutexClients);
 
+    printf("\n\nTHREAD sendMessages ENDED\n\n");
     return exitCode;
 }
-
-
-
-// int __cdecl main1(void) {
-
-//     // int iResult = 1;
-//     // do {
-//     //     mutexUI = CreateMutex(NULL, FALSE, NULL);
-//     //     if (mutexUI == NULL) break;
-
-//     //     mutexClients = CreateMutex(NULL, FALSE, NULL);
-//     //     if (mutexClients == NULL) break;
-
-//     //     mutexRecvMsg = CreateMutex(NULL, FALSE, NULL);
-//     //     if (mutexRecvMsg == NULL) break;
-
-//     //     mutexSendMsg = CreateMutex(NULL, FALSE, NULL);
-//     //     if (mutexSendMsg == NULL) break;
-
-//     //     mutexIdeas = CreateMutex(NULL, FALSE, NULL);
-//     //     if (mutexIdeas == NULL) break;
-
-//     //     iResult = 0;
-//     // } while (false);
-
-//     // if (iResult) {
-//     //     printf("CreateMutex failed with error: %d\n", GetLastError());
-//     //     return 1;
-//     // }
-
-//     // WSADATA wsaData;
-
-
-//     // struct addrinfo hints;
-
-//     // char recvBuf[DEFAULT_BUFLEN];
-//     // int  recvBufLen = DEFAULT_BUFLEN;
-
-//     // // Initialize Winsock
-//     // iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-//     // if (iResult != 0) {
-//     //     printf("WSAStartup failed with error: %d\n", iResult);
-//     //     return 1;
-//     // }
-
-//     // ZeroMemory(&hints, sizeof(hints));
-//     // hints.ai_family = AF_INET;
-//     // hints.ai_socktype = SOCK_STREAM;
-//     // hints.ai_protocol = IPPROTO_TCP;
-//     // hints.ai_flags = AI_PASSIVE;
-
-//     // // Resolve the server address and port
-//     // iResult = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
-//     // if (iResult != 0) {
-//     //     printf("getaddrinfo failed with error: %d\n", iResult);
-//     //     WSACleanup();
-//     //     return 1;
-//     // }
-
-//     // printf("Enter \"RS\" to start:\n");
-
-//     // DWORD  inputThreadID;
-//     // HANDLE inputThread = CreateThread(
-//     //     NULL,
-//     //     0,
-//     //     inputMessages,
-//     //     NULL,
-//     //     0,
-//     //     &inputThreadID
-//     //     );
-
-//     // DWORD threadID_send;
-//     // HANDLE sendThread = CreateThread(
-//     //     NULL,
-//     //     0,
-//     //     sendMessages,
-//     //     &clients,
-//     //     0,
-//     //     &threadID_send
-//     //     );
-//     // DWORD threadID_servent;
-//     // HANDLE serventThread = CreateThread(
-//     //     NULL,
-//     //     0,
-//     //     receiveServent,
-//     //     &clients,
-//     //     0,
-//     //     &threadID_servent
-//     //     );
-
-//     // DWORD exitCode;
-
-//     while (true) {
-//         Sleep(RERANK_TIME);
-//     }
-
-//     // WSACleanup();
-//     // CloseHandle(mutexUI);
-//     // CloseHandle(mutexClients);
-//     // CloseHandle(mutexRecvMsg);
-//     // CloseHandle(mutexSendMsg);
-//     // CloseHandle(mutexIdeas);
-
-//     printf("\nEND\n");
-
-//     return 0;
-// }
-

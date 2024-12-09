@@ -4,7 +4,6 @@
 #include "countdowntimer.h"
 #include <QMainWindow>
 #include <QTableWidget>
-#include <Windows.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -29,19 +28,24 @@ private slots:
 
     //function
     bool AddUserInTable(QWidget* page, std::string sUserName);
-    void AddIdea(std::string sIdea);
+    void AddIdea(std::string sIdea, int TID);
 
     void on_topicLineEdit_textChanged(const QString &arg1);
 
     void on_stackedWidget_currentChanged(int arg1);
 
+    void updateClientsTable();
+    void updateIdeasTable();
+    void updateVoteTable();
+
+    void OutputPodium();
+
 private:
     Ui::MainWindow *ui;
 
-    std::string strTopicName;
     QString topicName;
-
     CountdownTimer* timer;
+    std::vector<QLabel*> podium;
 
 };
 #endif // MAINWINDOW_H

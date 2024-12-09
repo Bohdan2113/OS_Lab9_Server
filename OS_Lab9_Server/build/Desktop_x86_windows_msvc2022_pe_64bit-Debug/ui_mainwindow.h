@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 6.5.6
+** Created by: Qt User Interface Compiler version 6.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -17,7 +17,6 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
-#include <QtWidgets/QScrollArea>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QTableWidget>
@@ -63,10 +62,9 @@ public:
     QLabel *timerCrIdeaLabel;
     QLabel *timeImgCrIdea;
     QWidget *bodyWidget;
-    QVBoxLayout *verticalLayout_6;
+    QVBoxLayout *verticalLayout_3;
     QLabel *label_2;
-    QScrollArea *scrollArea;
-    QWidget *scrollAreaWidgetContents;
+    QTableWidget *voteTable;
     QHBoxLayout *horizontalLayout_6;
     QSpacerItem *horizontalSpacer_2;
     QPushButton *EndSessionButton;
@@ -94,17 +92,17 @@ public:
     QSpacerItem *horizontalSpacer_15;
     QVBoxLayout *verticalLayout_24;
     QSpacerItem *verticalSpacer_19;
-    QLabel *label_25;
+    QLabel *secondPlaceLabel;
     QLabel *label_26;
     QSpacerItem *horizontalSpacer_16;
     QVBoxLayout *verticalLayout_25;
     QSpacerItem *verticalSpacer_20;
-    QLabel *label_27;
+    QLabel *firstPlaceLabel;
     QLabel *label_28;
     QSpacerItem *horizontalSpacer_17;
     QVBoxLayout *verticalLayout_26;
     QSpacerItem *verticalSpacer_21;
-    QLabel *label_29;
+    QLabel *thirdPlaceLabel;
     QLabel *label_30;
     QSpacerItem *horizontalSpacer_18;
     QHBoxLayout *horizontalLayout_15;
@@ -238,7 +236,7 @@ public:
         createRoomButton->setSizePolicy(sizePolicy1);
         createRoomButton->setMinimumSize(QSize(230, 0));
         createRoomButton->setFont(font);
-        createRoomButton->setCursor(QCursor(Qt::PointingHandCursor));
+        createRoomButton->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
         createRoomButton->setStyleSheet(QString::fromUtf8("QPushButton {\n"
 "    width: 150px;                      /* \320\250\320\270\321\200\320\270\320\275\320\260 \320\272\320\275\320\276\320\277\320\272\320\270 */\n"
 "    height: 50px;                      /* \320\222\320\270\321\201\320\276\321\202\320\260 \320\272\320\275\320\276\320\277\320\272\320\270 */\n"
@@ -351,7 +349,7 @@ public:
         startSessionPushButton->setSizePolicy(sizePolicy1);
         startSessionPushButton->setMinimumSize(QSize(230, 0));
         startSessionPushButton->setFont(font);
-        startSessionPushButton->setCursor(QCursor(Qt::PointingHandCursor));
+        startSessionPushButton->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
         startSessionPushButton->setStyleSheet(QString::fromUtf8("QPushButton {\n"
 "    width: 105px;                      /* \320\250\320\270\321\200\320\270\320\275\320\260 \320\272\320\275\320\276\320\277\320\272\320\270 */\n"
 "    height: 50px;                      /* \320\222\320\270\321\201\320\276\321\202\320\260 \320\272\320\275\320\276\320\277\320\272\320\270 */\n"
@@ -432,10 +430,8 @@ public:
         bodyWidget->setObjectName("bodyWidget");
         bodyWidget->setStyleSheet(QString::fromUtf8("background: transparent;\n"
 ""));
-        verticalLayout_6 = new QVBoxLayout(bodyWidget);
-        verticalLayout_6->setSpacing(0);
-        verticalLayout_6->setObjectName("verticalLayout_6");
-        verticalLayout_6->setContentsMargins(20, 0, 20, 0);
+        verticalLayout_3 = new QVBoxLayout(bodyWidget);
+        verticalLayout_3->setObjectName("verticalLayout_3");
         label_2 = new QLabel(bodyWidget);
         label_2->setObjectName("label_2");
         label_2->setFont(font);
@@ -445,19 +441,38 @@ public:
 ""));
         label_2->setMargin(5);
 
-        verticalLayout_6->addWidget(label_2);
+        verticalLayout_3->addWidget(label_2);
 
-        scrollArea = new QScrollArea(bodyWidget);
-        scrollArea->setObjectName("scrollArea");
-        scrollArea->setStyleSheet(QString::fromUtf8("background-color: rgba(255, 255, 255, 0.8); "));
-        scrollArea->setWidgetResizable(true);
-        scrollAreaWidgetContents = new QWidget();
-        scrollAreaWidgetContents->setObjectName("scrollAreaWidgetContents");
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 758, 469));
-        scrollAreaWidgetContents->setStyleSheet(QString::fromUtf8("background-color: rgba(255, 255, 255, 0.8); "));
-        scrollArea->setWidget(scrollAreaWidgetContents);
+        voteTable = new QTableWidget(bodyWidget);
+        if (voteTable->columnCount() < 2)
+            voteTable->setColumnCount(2);
+        voteTable->setObjectName("voteTable");
+        QSizePolicy sizePolicy3(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(voteTable->sizePolicy().hasHeightForWidth());
+        voteTable->setSizePolicy(sizePolicy3);
+        voteTable->setFont(font2);
+        voteTable->setStyleSheet(QString::fromUtf8("background: transparent;\n"
+"background-color: rgb(255, 255, 255);\n"
+"color: rgb(0, 0, 0);"));
+        voteTable->setSizeAdjustPolicy(QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored);
+        voteTable->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
+        voteTable->setDragEnabled(true);
+        voteTable->setSelectionMode(QAbstractItemView::SelectionMode::MultiSelection);
+        voteTable->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
+        voteTable->setTextElideMode(Qt::TextElideMode::ElideLeft);
+        voteTable->setVerticalScrollMode(QAbstractItemView::ScrollMode::ScrollPerItem);
+        voteTable->setHorizontalScrollMode(QAbstractItemView::ScrollMode::ScrollPerItem);
+        voteTable->setRowCount(0);
+        voteTable->setColumnCount(2);
+        voteTable->horizontalHeader()->setVisible(false);
+        voteTable->horizontalHeader()->setStretchLastSection(true);
+        voteTable->verticalHeader()->setCascadingSectionResizes(false);
+        voteTable->verticalHeader()->setMinimumSectionSize(0);
+        voteTable->verticalHeader()->setDefaultSectionSize(45);
 
-        verticalLayout_6->addWidget(scrollArea);
+        verticalLayout_3->addWidget(voteTable);
 
         horizontalLayout_6 = new QHBoxLayout();
         horizontalLayout_6->setSpacing(0);
@@ -473,7 +488,7 @@ public:
         EndSessionButton->setSizePolicy(sizePolicy1);
         EndSessionButton->setMinimumSize(QSize(230, 0));
         EndSessionButton->setFont(font);
-        EndSessionButton->setCursor(QCursor(Qt::PointingHandCursor));
+        EndSessionButton->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
         EndSessionButton->setLayoutDirection(Qt::LayoutDirection::LeftToRight);
         EndSessionButton->setStyleSheet(QString::fromUtf8("QPushButton {\n"
 "    width: 105px;                      /* \320\250\320\270\321\200\320\270\320\275\320\260 \320\272\320\275\320\276\320\277\320\272\320\270 */\n"
@@ -502,7 +517,7 @@ public:
         horizontalLayout_6->addWidget(EndSessionButton);
 
 
-        verticalLayout_6->addLayout(horizontalLayout_6);
+        verticalLayout_3->addLayout(horizontalLayout_6);
 
 
         verticalLayout_7->addWidget(bodyWidget);
@@ -573,27 +588,22 @@ public:
         verticalLayout_8->addWidget(label_16);
 
         voteTableWidget = new QTableWidget(widget_4);
-        if (voteTableWidget->columnCount() < 3)
-            voteTableWidget->setColumnCount(3);
+        if (voteTableWidget->columnCount() < 2)
+            voteTableWidget->setColumnCount(2);
         QTableWidgetItem *__qtablewidgetitem2 = new QTableWidgetItem();
         __qtablewidgetitem2->setFont(font2);
         voteTableWidget->setHorizontalHeaderItem(0, __qtablewidgetitem2);
         QTableWidgetItem *__qtablewidgetitem3 = new QTableWidgetItem();
         __qtablewidgetitem3->setFont(font2);
         voteTableWidget->setHorizontalHeaderItem(1, __qtablewidgetitem3);
-        QTableWidgetItem *__qtablewidgetitem4 = new QTableWidgetItem();
-        __qtablewidgetitem4->setFont(font2);
-        voteTableWidget->setHorizontalHeaderItem(2, __qtablewidgetitem4);
-        if (voteTableWidget->rowCount() < 5)
-            voteTableWidget->setRowCount(5);
         voteTableWidget->setObjectName("voteTableWidget");
         voteTableWidget->setFont(font2);
         voteTableWidget->setAutoFillBackground(false);
         voteTableWidget->setStyleSheet(QString::fromUtf8("background: transparent;\n"
 "background-color: rgba(255, 255, 255, 0.8); "));
         voteTableWidget->setSizeAdjustPolicy(QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored);
-        voteTableWidget->setRowCount(5);
-        voteTableWidget->setColumnCount(3);
+        voteTableWidget->setRowCount(0);
+        voteTableWidget->setColumnCount(2);
         voteTableWidget->horizontalHeader()->setVisible(true);
         voteTableWidget->horizontalHeader()->setCascadingSectionResizes(false);
         voteTableWidget->horizontalHeader()->setMinimumSectionSize(60);
@@ -670,11 +680,11 @@ public:
 
         widget_14 = new QWidget(podiumPage);
         widget_14->setObjectName("widget_14");
-        QSizePolicy sizePolicy3(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(widget_14->sizePolicy().hasHeightForWidth());
-        widget_14->setSizePolicy(sizePolicy3);
+        QSizePolicy sizePolicy4(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(widget_14->sizePolicy().hasHeightForWidth());
+        widget_14->setSizePolicy(sizePolicy4);
         widget_14->setMinimumSize(QSize(0, 300));
         widget_14->setStyleSheet(QString::fromUtf8("background: transparent;"));
         horizontalLayout_17 = new QHBoxLayout(widget_14);
@@ -691,19 +701,19 @@ public:
 
         verticalLayout_24->addItem(verticalSpacer_19);
 
-        label_25 = new QLabel(widget_14);
-        label_25->setObjectName("label_25");
-        sizePolicy.setHeightForWidth(label_25->sizePolicy().hasHeightForWidth());
-        label_25->setSizePolicy(sizePolicy);
-        label_25->setMinimumSize(QSize(200, 0));
-        label_25->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
+        secondPlaceLabel = new QLabel(widget_14);
+        secondPlaceLabel->setObjectName("secondPlaceLabel");
+        sizePolicy.setHeightForWidth(secondPlaceLabel->sizePolicy().hasHeightForWidth());
+        secondPlaceLabel->setSizePolicy(sizePolicy);
+        secondPlaceLabel->setMinimumSize(QSize(200, 0));
+        secondPlaceLabel->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
 "font-size: 20px;  \n"
 "background: transparent;\n"
 ""));
-        label_25->setAlignment(Qt::AlignmentFlag::AlignCenter);
-        label_25->setWordWrap(true);
+        secondPlaceLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
+        secondPlaceLabel->setWordWrap(true);
 
-        verticalLayout_24->addWidget(label_25);
+        verticalLayout_24->addWidget(secondPlaceLabel);
 
         label_26 = new QLabel(widget_14);
         label_26->setObjectName("label_26");
@@ -728,19 +738,19 @@ public:
 
         verticalLayout_25->addItem(verticalSpacer_20);
 
-        label_27 = new QLabel(widget_14);
-        label_27->setObjectName("label_27");
-        sizePolicy.setHeightForWidth(label_27->sizePolicy().hasHeightForWidth());
-        label_27->setSizePolicy(sizePolicy);
-        label_27->setMinimumSize(QSize(200, 0));
-        label_27->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
+        firstPlaceLabel = new QLabel(widget_14);
+        firstPlaceLabel->setObjectName("firstPlaceLabel");
+        sizePolicy.setHeightForWidth(firstPlaceLabel->sizePolicy().hasHeightForWidth());
+        firstPlaceLabel->setSizePolicy(sizePolicy);
+        firstPlaceLabel->setMinimumSize(QSize(200, 0));
+        firstPlaceLabel->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
 "font-size: 20px;  \n"
 "background: transparent;\n"
 ""));
-        label_27->setAlignment(Qt::AlignmentFlag::AlignCenter);
-        label_27->setWordWrap(true);
+        firstPlaceLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
+        firstPlaceLabel->setWordWrap(true);
 
-        verticalLayout_25->addWidget(label_27);
+        verticalLayout_25->addWidget(firstPlaceLabel);
 
         label_28 = new QLabel(widget_14);
         label_28->setObjectName("label_28");
@@ -764,19 +774,19 @@ public:
 
         verticalLayout_26->addItem(verticalSpacer_21);
 
-        label_29 = new QLabel(widget_14);
-        label_29->setObjectName("label_29");
-        sizePolicy.setHeightForWidth(label_29->sizePolicy().hasHeightForWidth());
-        label_29->setSizePolicy(sizePolicy);
-        label_29->setMinimumSize(QSize(200, 0));
-        label_29->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
+        thirdPlaceLabel = new QLabel(widget_14);
+        thirdPlaceLabel->setObjectName("thirdPlaceLabel");
+        sizePolicy.setHeightForWidth(thirdPlaceLabel->sizePolicy().hasHeightForWidth());
+        thirdPlaceLabel->setSizePolicy(sizePolicy);
+        thirdPlaceLabel->setMinimumSize(QSize(200, 0));
+        thirdPlaceLabel->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
 "font-size: 20px;  \n"
 "background: transparent;\n"
 ""));
-        label_29->setAlignment(Qt::AlignmentFlag::AlignCenter);
-        label_29->setWordWrap(true);
+        thirdPlaceLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
+        thirdPlaceLabel->setWordWrap(true);
 
-        verticalLayout_26->addWidget(label_29);
+        verticalLayout_26->addWidget(thirdPlaceLabel);
 
         label_30 = new QLabel(widget_14);
         label_30->setObjectName("label_30");
@@ -812,7 +822,7 @@ public:
         homeButton->setSizePolicy(sizePolicy1);
         homeButton->setMinimumSize(QSize(150, 0));
         homeButton->setFont(font);
-        homeButton->setCursor(QCursor(Qt::PointingHandCursor));
+        homeButton->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
         homeButton->setStyleSheet(QString::fromUtf8("QPushButton {\n"
 "    width: 150px;                      /* \320\250\320\270\321\200\320\270\320\275\320\260 \320\272\320\275\320\276\320\277\320\272\320\270 */\n"
 "    height: 50px;                      /* \320\222\320\270\321\201\320\276\321\202\320\260 \320\272\320\275\320\276\320\277\320\272\320\270 */\n"
@@ -850,7 +860,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        stackedWidget->setCurrentIndex(2);
+        stackedWidget->setCurrentIndex(3);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -885,17 +895,15 @@ public:
         QTableWidgetItem *___qtablewidgetitem2 = voteTableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem2->setText(QCoreApplication::translate("MainWindow", "Idea", nullptr));
         QTableWidgetItem *___qtablewidgetitem3 = voteTableWidget->horizontalHeaderItem(1);
-        ___qtablewidgetitem3->setText(QCoreApplication::translate("MainWindow", "Author", nullptr));
-        QTableWidgetItem *___qtablewidgetitem4 = voteTableWidget->horizontalHeaderItem(2);
-        ___qtablewidgetitem4->setText(QCoreApplication::translate("MainWindow", "Votes", nullptr));
+        ___qtablewidgetitem3->setText(QCoreApplication::translate("MainWindow", "Votes", nullptr));
         label_22->setText(QString());
         label_23->setText(QCoreApplication::translate("MainWindow", "Top 3 ideas:", nullptr));
         topicNameLabel->setText(QCoreApplication::translate("MainWindow", "How to stay survive?", nullptr));
-        label_25->setText(QCoreApplication::translate("MainWindow", "erjteyjety jetyjejet", nullptr));
+        secondPlaceLabel->setText(QString());
         label_26->setText(QString());
-        label_27->setText(QCoreApplication::translate("MainWindow", "dtykfjrtsje\321\203\320\260\320\272\320\277\320\272\320\265\321\200\320\265\320\275\321\200\320\274\320\272\320\260tyjetyj etyjetjyt", nullptr));
+        firstPlaceLabel->setText(QString());
         label_28->setText(QString());
-        label_29->setText(QCoreApplication::translate("MainWindow", "JUICjetj etjertjejrE", nullptr));
+        thirdPlaceLabel->setText(QString());
         label_30->setText(QString());
         homeButton->setText(QCoreApplication::translate("MainWindow", "Home", nullptr));
     } // retranslateUi
