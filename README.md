@@ -30,7 +30,7 @@
    git clone https://github.com/Bohdan2113/OS_Lab9_Server.git
 
 або завантажте проєкт з GitHub репозиторію на комп'ютер за посиланнями:
-  Клієнт: https://github.com/Bohdan2113/OS_Lab9_Server.git
+  Сервер: https://github.com/Bohdan2113/OS_Lab9_Server.git
   
 2. Відкрийте проект в Qt Creator
 - Запустіть Qt Creator.
@@ -43,7 +43,7 @@
 
 ## Пов’язані проєкти
 Ця програма працює у зв'язці із клієнтом. Ви можете знайти клієнтську програму тут:
-  Сервер: https://github.com/Bohdan2113/OS_Lab9_Client.git
+  Клієнт: https://github.com/Bohdan2113/OS_Lab9_Client.git
 
 ## Використання
 - Запустіть серверний проєкт і переконайтесь, що він чекає на підключення.
