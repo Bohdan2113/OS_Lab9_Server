@@ -218,7 +218,7 @@ void MainWindow::on_createRoomButton_clicked()
             "width: 150px; "
             "height: 50px; "
             "background: transparent; "
-            "background-color: rgb(255, 255, 255, 0.7); "
+            "background-color: rgba(255, 255, 255, 0.7); "
             "}"
             );
 
@@ -234,9 +234,10 @@ void MainWindow::on_createRoomButton_clicked()
         "width: 150px; "
         "height: 50px; "
         "background: transparent; "
-        "background-color: rgb(255, 255, 255, 0.7); "
+        "background-color: rgba(255, 255, 255, 0.7); "
         "}"
         );
+
     errorLabel->setStyleSheet("QLabel { color: black; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
     errorLabel->setText("");
 
@@ -355,7 +356,7 @@ void MainWindow::on_topicLineEdit_textChanged(const QString &text)
              "width: 150px; "
              "height: 50px; "
              "background: transparent; "
-             "background-color: rgb(255, 255, 255, 0.7); "
+             "background-color: rgba(255, 255, 255, 0.7); "
              "}"
              );
 
@@ -368,7 +369,7 @@ void MainWindow::on_topicLineEdit_textChanged(const QString &text)
             "width: 150px; "
             "height: 50px; "
             "background: transparent; "
-            "background-color: rgb(255, 255, 255, 0.7); "
+            "background-color: rgba(255, 255, 255, 0.7); "
             "}"
             );
 
@@ -618,4 +619,3 @@ void MainWindow::OutputPodium()
         qDebug() << "podium set: " << i;
     }
 }
-

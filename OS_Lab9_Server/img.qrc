@@ -8,5 +8,6 @@
         <file>images/secondPlacePodium.png</file>
         <file>images/thirdPlacePodium.png</file>
         <file>images/waitPageBackgroung.png</file>
+        <file>images/serverLogo.png</file>
     </qresource>
 </RCC>

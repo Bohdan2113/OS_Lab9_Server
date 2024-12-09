@@ -10,6 +10,7 @@
 #define UI_MAINWINDOW_H
 
 #include <QtCore/QVariant>
+#include <QtGui/QIcon>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
@@ -114,6 +115,9 @@ public:
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
         MainWindow->resize(800, 666);
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/image/images/serverLogo.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+        MainWindow->setWindowIcon(icon);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         verticalLayout = new QVBoxLayout(centralwidget);
@@ -173,7 +177,7 @@ public:
 "width: 150px;                      \n"
 "height: 50px;  \n"
 "background: transparent;\n"
-"background-color: rgb(255, 255, 255, 0.7);\n"
+"background-color: rgba(255, 255, 255, 0.7);\n"
 "\n"
 ""));
 
@@ -215,7 +219,7 @@ public:
 "width: 100px;                      /* \320\250\320\270\321\200\320\270\320\275\320\260 \320\272\320\275\320\276\320\277\320\272\320\270 */\n"
 "    height: 50px;  \n"
 "background: transparent;\n"
-"background-color: rgb(255, 255, 255, 0.7);"));
+"background-color: rgba(255, 255, 255, 0.7);"));
         setTimeEdit->setWrapping(false);
         setTimeEdit->setFrame(true);
         setTimeEdit->setCurrentSection(QDateTimeEdit::Section::MinuteSection);
@@ -328,7 +332,7 @@ public:
         hamstersTableWidget->setObjectName("hamstersTableWidget");
         hamstersTableWidget->setFont(font2);
         hamstersTableWidget->setStyleSheet(QString::fromUtf8("background: transparent;\n"
-"background-color: rgb(255, 255, 255);\n"
+"background-color: rgba(255, 255, 255, 0.7);\n"
 ""));
         hamstersTableWidget->setShowGrid(true);
         hamstersTableWidget->setRowCount(0);
@@ -454,7 +458,7 @@ public:
         voteTable->setSizePolicy(sizePolicy3);
         voteTable->setFont(font2);
         voteTable->setStyleSheet(QString::fromUtf8("background: transparent;\n"
-"background-color: rgb(255, 255, 255);\n"
+"background-color: rgba(255, 255, 255, 0.7);\n"
 "color: rgb(0, 0, 0);"));
         voteTable->setSizeAdjustPolicy(QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored);
         voteTable->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
@@ -600,7 +604,7 @@ public:
         voteTableWidget->setFont(font2);
         voteTableWidget->setAutoFillBackground(false);
         voteTableWidget->setStyleSheet(QString::fromUtf8("background: transparent;\n"
-"background-color: rgba(255, 255, 255, 0.8); "));
+"background-color: rgba(255, 255, 255, 0.7); "));
         voteTableWidget->setSizeAdjustPolicy(QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored);
         voteTableWidget->setRowCount(0);
         voteTableWidget->setColumnCount(2);
@@ -869,7 +873,7 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
+        MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "GServer", nullptr));
         label_6->setText(QString());
         label->setText(QCoreApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:18pt;\">Topic:</span></p></body></html>", nullptr));
 #if QT_CONFIG(tooltip)

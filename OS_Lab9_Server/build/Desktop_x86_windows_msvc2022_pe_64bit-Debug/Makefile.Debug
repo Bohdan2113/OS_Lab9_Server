@@ -183,6 +183,7 @@ debug\qrc_img.cpp: ..\..\img.qrc \
 		..\..\images\clock.png \
 		..\..\images\thirdPlacePodium.png \
 		..\..\images\logo.png \
+		..\..\images\serverLogo.png \
 		..\..\images\mainPageBackground.png \
 		..\..\images\moneyBackgroung.png \
 		..\..\images\secondPlacePodium.png \
@@ -1338,7 +1339,8 @@ debug\mainwindow.obj: ..\..\mainwindow.cpp ..\..\mainwindow.h \
 		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qdialog.h \
 		C:\Qt\6.8.0\msvc2022_64\include\QtWidgets\qdialogbuttonbox.h \
 		..\..\server.h \
-		..\..\server.cpp
+		..\..\server.cpp \
+		C:\Qt\6.8.0\msvc2022_64\include\QtCore\QDebug
 
 debug\qrc_img.obj: debug\qrc_img.cpp 
 
