@@ -485,10 +485,6 @@ DWORD WINAPI sendMessages(LPVOID param) {
         std::cout << "Popped sendMessage: " << message << "\n";
 
         if (message == "SS") {
-            if (clients->size() == 0) {
-                printf("Error starting sending session. No Clients connected\n");
-                continue;
-            }
             closeListen(ListenThread, listenSocket);
 
             std::string topic;

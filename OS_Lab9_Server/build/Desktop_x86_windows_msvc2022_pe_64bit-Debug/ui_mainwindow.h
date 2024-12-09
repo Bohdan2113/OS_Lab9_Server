@@ -85,7 +85,7 @@ public:
     QLabel *label_22;
     QSpacerItem *verticalSpacer_17;
     QLabel *label_23;
-    QLabel *topicNameLabel;
+    QLabel *podiumTopicLabel;
     QSpacerItem *verticalSpacer_18;
     QWidget *widget_14;
     QHBoxLayout *horizontalLayout_17;
@@ -467,7 +467,7 @@ public:
         voteTable->setRowCount(0);
         voteTable->setColumnCount(2);
         voteTable->horizontalHeader()->setVisible(false);
-        voteTable->horizontalHeader()->setStretchLastSection(true);
+        voteTable->horizontalHeader()->setStretchLastSection(false);
         voteTable->verticalHeader()->setCascadingSectionResizes(false);
         voteTable->verticalHeader()->setMinimumSectionSize(0);
         voteTable->verticalHeader()->setDefaultSectionSize(45);
@@ -661,18 +661,18 @@ public:
 
         verticalLayout_10->addWidget(label_23);
 
-        topicNameLabel = new QLabel(podiumPage);
-        topicNameLabel->setObjectName("topicNameLabel");
-        sizePolicy.setHeightForWidth(topicNameLabel->sizePolicy().hasHeightForWidth());
-        topicNameLabel->setSizePolicy(sizePolicy);
-        topicNameLabel->setFont(font);
-        topicNameLabel->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
+        podiumTopicLabel = new QLabel(podiumPage);
+        podiumTopicLabel->setObjectName("podiumTopicLabel");
+        sizePolicy.setHeightForWidth(podiumTopicLabel->sizePolicy().hasHeightForWidth());
+        podiumTopicLabel->setSizePolicy(sizePolicy);
+        podiumTopicLabel->setFont(font);
+        podiumTopicLabel->setStyleSheet(QString::fromUtf8("font-family: 'Julius Sans One', sans-serif; /* \320\250\321\200\320\270\321\204\321\202 */\n"
 "font-size: 30px;  \n"
 "background: transparent;\n"
 ""));
-        topicNameLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
+        podiumTopicLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
-        verticalLayout_10->addWidget(topicNameLabel);
+        verticalLayout_10->addWidget(podiumTopicLabel);
 
         verticalSpacer_18 = new QSpacerItem(20, 2, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
 
@@ -859,8 +859,9 @@ public:
         MainWindow->setCentralWidget(centralwidget);
 
         retranslateUi(MainWindow);
+        QObject::connect(topicLineEdit, &QLineEdit::returnPressed, createRoomButton, qOverload<>(&QPushButton::click));
 
-        stackedWidget->setCurrentIndex(3);
+        stackedWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -898,7 +899,7 @@ public:
         ___qtablewidgetitem3->setText(QCoreApplication::translate("MainWindow", "Votes", nullptr));
         label_22->setText(QString());
         label_23->setText(QCoreApplication::translate("MainWindow", "Top 3 ideas:", nullptr));
-        topicNameLabel->setText(QCoreApplication::translate("MainWindow", "How to stay survive?", nullptr));
+        podiumTopicLabel->setText(QCoreApplication::translate("MainWindow", "How to stay survive?", nullptr));
         secondPlaceLabel->setText(QString());
         label_26->setText(QString());
         firstPlaceLabel->setText(QString());

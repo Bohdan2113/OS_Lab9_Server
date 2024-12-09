@@ -20,7 +20,6 @@
 #include <algorithm>
 #include <queue>
 
-
 #pragma comment (lib, "Ws2_32.lib")
 
 #define DEFAULT_BUFLEN 512
@@ -48,7 +47,6 @@ typedef struct clnt {
 } Client;
 
 std::vector<Client> clients;
-
 
 typedef struct extMsg {
     int clientUID;
@@ -83,7 +81,6 @@ HANDLE mutexIdeas = NULL;
 HANDLE allAMThread;
 HANDLE ListenThread;
 SOCKET listenSocket = INVALID_SOCKET;
-
 
 int timerOut = false;
 

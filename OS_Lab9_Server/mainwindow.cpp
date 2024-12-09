@@ -206,6 +206,7 @@ void MainWindow::updateVoteTable()
 void MainWindow::on_createRoomButton_clicked()
 {
     printf("BUTTON createRoom CLICKED\n");
+
     QLineEdit* lineEdit = ui->topicLineEdit;
     QLabel* errorLabel = ui->errorLabel;
 
@@ -266,6 +267,12 @@ void MainWindow::on_createRoomButton_clicked()
 void MainWindow::on_startSessionPushButton_clicked()
 {
     printf("BUTTON startSession CLICKED\n");
+
+    if (clients.size() == 0) {
+        QMessageBox::information(this, "Error", "Can`t start session.\nWait for at least one user pls.\n");
+        printf("Can`t start session. Wait for some users pls.\n");
+        return;
+    }
 
     prevClientsCount = 0;
     updateTimer->stop();
@@ -528,29 +535,20 @@ bool MainWindow::AddUserInTable(QWidget* page, std::string sUserName){
             QMessageBox::Yes | QMessageBox::No);
 
         if (reply == QMessageBox::Yes) {
-            std::cout << "Trying to remove user in row #" << iRowIndex << " .\n";
+            std::cout << "Trying to remove user in row #" << rowIndex << " .\n";
             std::cout << "Old user count: " << clients.size() << "\n";
             WaitForSingleObject(mutexClients, INFINITY);
 
-<<<<<<< HEAD
-            if (rowIndex < clients.size()) { // Перевіряємо, чи індекс в межах масиву
-                printf("Trying to kick Client #%d\n", clients[rowIndex].clientUID);
-                closeClientWithUID(clients, clients[rowIndex].clientUID);
-            }
-
-            table->removeRow(rowIndex);
-
-=======
-            std::cout << "Trying to kick User #" <<  clients[iRowIndex].clientUID << "\n";
-            closeClientWithUID(clients, clients[iRowIndex].clientUID);
+            std::cout << "Trying to kick User #" <<  clients[rowIndex].clientUID << "\n";
+            closeClientWithUID(clients, clients[rowIndex].clientUID);
             std::cout << "Client kicked.\n";
 
-            std::cout << "Trying to remove user row #" << iRowIndex << ".\n";
-            table->removeRow(iRowIndex);
-            std::cout << "User row #" << iRowIndex << " removed.\n";
+            std::cout << "Trying to remove user row #" << rowIndex << ".\n";
+            table->removeRow(rowIndex);
+            std::cout << "User row #" << rowIndex << " removed.\n";
 
             std::cout << "New user count: " << clients.size() << "\n";
->>>>>>> e2095a093b7bd195371b1688444c36dd243e80e5
+
             ReleaseMutex(mutexClients);
 
             qDebug() << "User row removed";
