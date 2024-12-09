@@ -23,10 +23,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui->errorLabel->setStyleSheet("QLabel { color: black; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
 
     ui->voteTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->voteTableWidget->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
+    ui->hamstersTableWidget->setColumnWidth(1, 150);
 
     ui->hamstersTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->hamstersTableWidget->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
     ui->hamstersTableWidget->setColumnWidth(1, 150);
+
+    ui->voteTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->voteTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
+    ui->voteTable->setColumnWidth(1, 150);
+
 
     podium.push_back(ui->firstPlaceLabel);
     podium.push_back(ui->secondPlaceLabel);
@@ -185,6 +192,7 @@ void MainWindow::updateVoteTable()
     }
 }
 
+
 void MainWindow::on_createRoomButton_clicked()
 {
     printf("BUTTON createRoom CLICKED\n");
@@ -224,20 +232,21 @@ void MainWindow::on_createRoomButton_clicked()
     QTime time = ui->setTimeEdit->time();
     int minutes = time.minute();
     int seconds = time.second();
-
     sessionTimeSec = minutes * 60 + seconds;
+
     sessionTopic=lineEdit->text().toStdString();
 
     lineEdit->setText(" ");
 
-    updateTimer = new QTimer(this);
-    connect(updateTimer, &QTimer::timeout, this, &MainWindow::updateClientsTable);
-    updateTimer->start(1000);
 
     printf("Push message: RS\n");
     WaitForSingleObject(mutexSendMsg, INFINITE);
     sendMessageQueue.push("RS");
     ReleaseMutex(mutexSendMsg);
+
+    updateTimer = new QTimer(this);
+    connect(updateTimer, &QTimer::timeout, this, &MainWindow::updateClientsTable);
+    updateTimer->start(1000);
 
     ui->stackedWidget->setCurrentWidget(ui->hamstersPage);
 
@@ -284,25 +293,34 @@ void MainWindow::on_EndSessionButton_clicked()
 void MainWindow::on_homeButton_clicked()
 {
     printf("BUTTON homeButton CLICKED\n");
+
     ui->EndSessionButton->setEnabled(true);
 
-    ui->stackedWidget->setCurrentWidget(ui->homePage);
-    this->topicName="";
+    QTime time(0, 3);
+    ui->setTimeEdit->setTime(time);
 
-    int rowCount = ui->voteTable->rowCount();
-    for (int i = rowCount - 1; i >= 0; --i) {
-        ui->voteTable->removeRow(i);
-    }
-
-    rowCount = ui->hamstersTableWidget->rowCount();
+    int rowCount = ui->hamstersTableWidget->rowCount();
     for (int i = rowCount - 1; i >= 0; --i) {
         ui->hamstersTableWidget->removeRow(i);
+    }
+
+    rowCount = ui->voteTable->rowCount();
+    for (int i = rowCount - 1; i >= 0; --i) {
+        ui->voteTable->removeRow(i);
     }
 
     rowCount = ui->voteTableWidget->rowCount();
     for (int i = rowCount - 1; i >= 0; --i) {
         ui->voteTableWidget->removeRow(i);
     }
+
+    ui->podiumTopicLabel->setText("");
+    ui->firstPlaceLabel->setText(QString::fromStdString(""));
+    ui->secondPlaceLabel->setText(QString::fromStdString(""));
+    ui->thirdPlaceLabel->setText(QString::fromStdString(""));
+
+    ui->stackedWidget->setCurrentWidget(ui->homePage);
+
     printf("BUTTON homeButton UNCLICKED\n");
 }
 
@@ -429,6 +447,10 @@ void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
                     progStage = "DS";
                     ui->stackedWidget->setCurrentWidget(ui->podiumPage);
 
+                    updateTimer->stop();
+                    updateTimer->deleteLater();
+                    updateTimer = nullptr;
+
                     progStageTimer2->stop();
                     progStageTimer2->deleteLater();
                     progStageTimer2 = nullptr;
@@ -453,6 +475,7 @@ void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
         break;
     }
 }
+
 
 bool MainWindow::AddUserInTable(QWidget* page, std::string sUserName){
 
@@ -479,18 +502,31 @@ bool MainWindow::AddUserInTable(QWidget* page, std::string sUserName){
     table->setCellWidget(iRowIndex, 1, button);
     table->resizeRowsToContents();
 
-    connect(button, &QPushButton::clicked, this, [iRowIndex, table]() {
+    connect(button, &QPushButton::clicked, this, [button, table]() {
+        // Знаходимо рядок, до якого прив'язана кнопка
+        QModelIndex index = table->indexAt(button->pos());
+        int rowIndex = index.row();
+
+        if (rowIndex == -1) {
+            qDebug() << "Failed to find the row index!";
+            return;
+        }
 
         QMessageBox::StandardButton reply = QMessageBox::question(
-            nullptr, "Confirm deeltion",
+            nullptr, "Confirm deletion",
             "Are you sure that you want\n  to delete this user?",
             QMessageBox::Yes | QMessageBox::No);
 
         if (reply == QMessageBox::Yes) {
             WaitForSingleObject(mutexClients, INFINITY);
-            table->removeRow(iRowIndex);
-            printf("Trying to kick Client #%d\n", clients[iRowIndex].clientUID);
-            closeClientWithUID(clients, clients[iRowIndex].clientUID);
+
+            if (rowIndex < clients.size()) { // Перевіряємо, чи індекс в межах масиву
+                printf("Trying to kick Client #%d\n", clients[rowIndex].clientUID);
+                closeClientWithUID(clients, clients[rowIndex].clientUID);
+            }
+
+            table->removeRow(rowIndex);
+
             ReleaseMutex(mutexClients);
 
             qDebug() << "User row removed";
@@ -507,74 +543,11 @@ bool MainWindow::AddUserInTable(QWidget* page, std::string sUserName){
     return  true;
 }
 
-//Додавання ідеї до scroll area
 void MainWindow::AddIdea(string sIdea, int TID)
 {
-    // ui->voteTable->setRowCount(ideaVector.size());
-
-    // for (int row = 0; row < ideaVector.size(); ++row) {
-    //     QTableWidgetItem *item = new QTableWidgetItem(QString::fromStdString(ideaVector[row].message));
-    //     ui->voteTable->setItem(row, 0, item);
-    // }
-
-
-
-    // QWidget* contentWidget = ui->scrollAreaWidgetContents;
-    // if (!contentWidget) return; // Перевірка на наявність
-
-    // qDebug() << "Scroll area founded ";
-
-    // QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(contentWidget->layout());
-    // if (!layout) {
-    //     layout = new QVBoxLayout(contentWidget);
-    //     contentWidget->setLayout(layout);
-    // }
-
-    // QPushButton* button = new QPushButton(QString::fromStdString(sIdea), contentWidget);
-
-    // button->setProperty("ideaID", TID);
-    // QFont font = button->font();
-    // font.setPointSize(16);
-    // button->setFont(font);
-
-    // button->adjustSize();
-    // button->setFixedSize(720, 70);
-
-    // QMenu *contextMenu = new QMenu(button);
-    // QAction *deleteAction = new QAction("Delete", contextMenu);
-
-
-    // contextMenu->addAction(deleteAction);
-    // connect(deleteAction, &QAction::triggered, [=]() {
-
-    //     QMessageBox::StandardButton reply = QMessageBox::question(
-    //         nullptr, "Confirm deletion",
-    //         "Are you sure that you want\n  to delete this idea?",
-    //         QMessageBox::Yes | QMessageBox::No);
-
-    //     if (reply == QMessageBox::Yes) {
-    //         WaitForSingleObject(mutexIdeas, INFINITY);
-    //         layout->removeWidget(button);
-    //         deleteIdea(TID);
-    //         ReleaseMutex(mutexIdeas);
-    //         delete button;
-    //     } else {
-    //         qDebug() << "User removal cancelled";
-    //     }
-
-    // });
-
-    // button->setContextMenuPolicy(Qt::CustomContextMenu);
-    // connect(button, &QPushButton::customContextMenuRequested, [=](const QPoint &pos) {
-    //     contextMenu->exec(button->mapToGlobal(pos));
-    // });
-
-
-    // layout->addWidget(button);
-
-
     int newRow = ui->voteTable->rowCount();
-    ui->voteTable->insertRow(newRow);
+    int iRowIndex= newRow;
+    ui->voteTable->setRowCount(newRow+1);
 
     QTableWidgetItem* ideaItem = new QTableWidgetItem(QString::fromStdString(sIdea));
     ideaItem->setData(Qt::UserRole, TID); // Зберігаємо ID ідеї
@@ -582,8 +555,13 @@ void MainWindow::AddIdea(string sIdea, int TID)
     ui->voteTable->setItem(newRow, 0, ideaItem);
 
     QPushButton* deleteButton = new QPushButton("Delete", ui->voteTable);
-    deleteButton->setFixedSize(100, 30);
+    QFont font = deleteButton->font();
+    font.setPointSize(16);
+    deleteButton->setFont(font);
+    deleteButton->setFixedSize(150, 50);
+
     ui->voteTable->setCellWidget(newRow, 1, deleteButton);
+    ui->voteTable->resizeRowsToContents();
 
     // Обробник видалення ідеї
     connect(deleteButton, &QPushButton::clicked, [=]() {
@@ -608,6 +586,8 @@ void MainWindow::AddIdea(string sIdea, int TID)
 
 void MainWindow::OutputPodium()
 {
+    ui->podiumTopicLabel->setText(QString::fromStdString(sessionTopic));
+
     for(int i = 0; i < (ideaVector.size() < 3 ? ideaVector.size() : 3); i++) {
         if (podium[i] == nullptr)
             qDebug() << "podium " << i << " nullptr";
