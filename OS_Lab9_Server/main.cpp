@@ -9,9 +9,9 @@
 
 int main(int argc, char *argv[])
 {
-    AllocConsole();
-    freopen("CONOUT$", "w", stdout);
-    printf("SERVER STARTED\n");
+    // AllocConsole();
+    // freopen("CONOUT$", "w", stdout);
+    // printf("SERVER STARTED\n");
 
     QApplication a(argc, argv);
     MainWindow w;

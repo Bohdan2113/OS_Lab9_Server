@@ -217,7 +217,7 @@ void MainWindow::on_createRoomButton_clicked()
             "width: 150px; "
             "height: 50px; "
             "background: transparent; "
-            "background-color: rgb(255, 255, 255, 0.7); "
+            "background-color: rgba(255, 255, 255, 0.7); "
             "}"
             );
 
@@ -233,9 +233,10 @@ void MainWindow::on_createRoomButton_clicked()
         "width: 150px; "
         "height: 50px; "
         "background: transparent; "
-        "background-color: rgb(255, 255, 255, 0.7); "
+        "background-color: rgba(255, 255, 255, 0.7); "
         "}"
         );
+
     errorLabel->setStyleSheet("QLabel { color: black; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
     errorLabel->setText("");
 
@@ -348,7 +349,7 @@ void MainWindow::on_topicLineEdit_textChanged(const QString &text)
              "width: 150px; "
              "height: 50px; "
              "background: transparent; "
-             "background-color: rgb(255, 255, 255, 0.7); "
+             "background-color: rgba(255, 255, 255, 0.7); "
              "}"
              );
 
@@ -361,7 +362,7 @@ void MainWindow::on_topicLineEdit_textChanged(const QString &text)
             "width: 150px; "
             "height: 50px; "
             "background: transparent; "
-            "background-color: rgb(255, 255, 255, 0.7); "
+            "background-color: rgba(255, 255, 255, 0.7); "
             "}"
             );
 
@@ -528,29 +529,19 @@ bool MainWindow::AddUserInTable(QWidget* page, std::string sUserName){
             QMessageBox::Yes | QMessageBox::No);
 
         if (reply == QMessageBox::Yes) {
-            std::cout << "Trying to remove user in row #" << iRowIndex << " .\n";
+            std::cout << "Trying to remove user in row #" << rowIndex << " .\n";
             std::cout << "Old user count: " << clients.size() << "\n";
             WaitForSingleObject(mutexClients, INFINITY);
 
-<<<<<<< HEAD
-            if (rowIndex < clients.size()) { // Перевіряємо, чи індекс в межах масиву
-                printf("Trying to kick Client #%d\n", clients[rowIndex].clientUID);
-                closeClientWithUID(clients, clients[rowIndex].clientUID);
-            }
-
-            table->removeRow(rowIndex);
-
-=======
-            std::cout << "Trying to kick User #" <<  clients[iRowIndex].clientUID << "\n";
-            closeClientWithUID(clients, clients[iRowIndex].clientUID);
+            std::cout << "Trying to kick User #" <<  clients[rowIndex].clientUID << "\n";
+            closeClientWithUID(clients, clients[rowIndex].clientUID);
             std::cout << "Client kicked.\n";
 
-            std::cout << "Trying to remove user row #" << iRowIndex << ".\n";
-            table->removeRow(iRowIndex);
-            std::cout << "User row #" << iRowIndex << " removed.\n";
+            std::cout << "Trying to remove user row #" << rowIndex << ".\n";
+            table->removeRow(rowIndex);
+            std::cout << "User row #" << rowIndex << " removed.\n";
 
             std::cout << "New user count: " << clients.size() << "\n";
->>>>>>> e2095a093b7bd195371b1688444c36dd243e80e5
             ReleaseMutex(mutexClients);
 
             qDebug() << "User row removed";
@@ -620,4 +611,3 @@ void MainWindow::OutputPodium()
         qDebug() << "podium set: " << i;
     }
 }
-
