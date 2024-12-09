@@ -378,7 +378,8 @@ void closeOneReceive(std::vector<Client>& clients, int i) {
     return;
 }
 
-void delFromVector(std::vector<Client>& clients, int i) {
+void delFromVector(std::vector<Client>& clients, int i)
+{
     std::cout << "Trying to delete from vector...\n";
     CloseHandle(clients[i].threadHandle);
     std::cout << "CloseHandle done\n";

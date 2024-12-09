@@ -12,6 +12,14 @@
 
 using namespace std;
 
+
+constexpr auto UPDATE_INTERVAL = 300;
+constexpr auto CHECK_PROG_STATE_INRVL = 100;
+QTimer *updateTimer;
+// int prevClientsCount = 0;
+int prevIdeasCount = 0;
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -136,15 +144,12 @@ MainWindow::~MainWindow()
 }
 
 
-QTimer *updateTimer;
-int prevClientsCount = 0;
-int prevIdeasCount = 0;
-
-
-void MainWindow::updateClientsTable() {
-
+void MainWindow::updateClientsTable()
+{
     WaitForSingleObject(mutexClients, INFINITY);
+    int prevClientsCount = ui->hamstersTableWidget->rowCount();
     int clientsCount = (int)clients.size();
+
     if (clientsCount > prevClientsCount) {
         for (int i = prevClientsCount; i < clientsCount; i++) {
             if (std::string(clients[i].name) == "unknown") {
@@ -159,6 +164,27 @@ void MainWindow::updateClientsTable() {
             std::cout << "User with name: " << clients[i].name << " added to the table\n";
         }
     }
+    else if(clientsCount < prevClientsCount) {
+        bool isLastToDeleate = 1;
+
+        for(int i = 0; i < clients.size(); i++) {
+            std::string nameFromTable = ui->hamstersTableWidget->item(i, 0)->text().toStdString();
+
+            if(clients[i].name != nameFromTable) {
+                ui->hamstersTableWidget->removeRow(i);
+                isLastToDeleate = 0;
+                break;
+            }
+        }
+
+        if(isLastToDeleate) {
+            int lastRow = ui->hamstersTableWidget->rowCount() - 1;
+            if (lastRow >= 0) {
+                ui->hamstersTableWidget->removeRow(lastRow);
+            }
+        }
+    }
+
     prevClientsCount = clientsCount;
     ReleaseMutex(mutexClients);
 }
@@ -258,7 +284,7 @@ void MainWindow::on_createRoomButton_clicked()
 
     updateTimer = new QTimer(this);
     connect(updateTimer, &QTimer::timeout, this, &MainWindow::updateClientsTable);
-    updateTimer->start(1000);
+    updateTimer->start(UPDATE_INTERVAL);
 
     ui->stackedWidget->setCurrentWidget(ui->hamstersPage);
 
@@ -275,13 +301,13 @@ void MainWindow::on_startSessionPushButton_clicked()
         return;
     }
 
-    prevClientsCount = 0;
+    // prevClientsCount = 0;
     updateTimer->stop();
 
     disconnect(updateTimer, &QTimer::timeout, this, &MainWindow::updateClientsTable);
     connect(updateTimer, &QTimer::timeout, this, &MainWindow::updateIdeasTable);
 
-    updateTimer->start(1000);
+    updateTimer->start(UPDATE_INTERVAL);
 
     ui->stackedWidget->setCurrentWidget(ui->createIdeaPage);
 
@@ -434,7 +460,7 @@ void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
                 disconnect(updateTimer, &QTimer::timeout, this, &MainWindow::updateIdeasTable);
                 connect(updateTimer, &QTimer::timeout, this, &MainWindow::updateVoteTable);
 
-                updateTimer->start(250);
+                updateTimer->start(UPDATE_INTERVAL);
                 ui->stackedWidget->setCurrentWidget(ui->votePage);
 
                 progStageTimer->stop();
@@ -442,7 +468,7 @@ void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
                 progStageTimer = nullptr;
             }
         });
-        progStageTimer->start(100);
+        progStageTimer->start(CHECK_PROG_STATE_INRVL);
 
         break;
     case 3:
@@ -478,7 +504,7 @@ void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
             return;
         }
 
-        progStageTimer2->start(500);
+        progStageTimer2->start(CHECK_PROG_STATE_INRVL);
 
         break;
     case 4:
@@ -538,19 +564,21 @@ bool MainWindow::AddUserInTable(QWidget* page, std::string sUserName){
         if (reply == QMessageBox::Yes) {
             std::cout << "Trying to remove user in row #" << rowIndex << " .\n";
             std::cout << "Old user count: " << clients.size() << "\n";
-            WaitForSingleObject(mutexClients, INFINITY);
 
+
+            WaitForSingleObject(mutexClients, INFINITY);
             std::cout << "Trying to kick User #" <<  clients[rowIndex].clientUID << "\n";
             closeClientWithUID(clients, clients[rowIndex].clientUID);
             std::cout << "Client kicked.\n";
 
             std::cout << "Trying to remove user row #" << rowIndex << ".\n";
             table->removeRow(rowIndex);
+            // prevClientsCount--;
             std::cout << "User row #" << rowIndex << " removed.\n";
 
             std::cout << "New user count: " << clients.size() << "\n";
-
             ReleaseMutex(mutexClients);
+
 
             qDebug() << "User row removed";
 
