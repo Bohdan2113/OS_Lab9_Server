@@ -25,6 +25,7 @@ private slots:
     void on_startSessionPushButton_clicked();
     void on_EndSessionButton_clicked();
     void on_homeButton_clicked();
+    void on_saveAsButton_clicked();
 
     //function
     bool AddUserInTable(QWidget* page, std::string sUserName);

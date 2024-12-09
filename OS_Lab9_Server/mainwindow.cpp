@@ -7,6 +7,8 @@
 #include <QMenu>
 #include <QAction>
 #include <QMessageBox>
+#include <QFileDialog>
+#include <fstream>
 
 #include "server.h"
 
@@ -334,6 +336,38 @@ void MainWindow::on_EndSessionButton_clicked()
     printf("BUTTON EndSession UNCLICKED\n");
 }
 
+void MainWindow::on_saveAsButton_clicked()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, "Зберегти файл як", QDir::homePath(), "*.*");
+
+    // Перевірити, чи вибрано файл
+    if (fileName.isEmpty()) {
+        return; // Користувач закрив діалогове вікно
+    }
+    std::ofstream outFile(fileName.toStdString());
+    if (!outFile.is_open()) {
+        QMessageBox::warning(this, "Error", "Couldn`t open the file.\nTry again.");
+        return;
+    }
+
+    outFile << "Topic: " << sessionTopic << std::endl;
+    outFile << "\n\n-------------------- All ideas --------------------\n";
+    for(int i = 0; i < ideaVector.size(); i++){
+        outFile << i+1 << ". " << ideaVector[i].message.message << std::endl;
+    }
+
+    outFile << "\n\n------------------- Top "
+            << (ideaVector.size() < 3 ? ideaVector.size() : 3)
+            << " ideas -------------------\n";
+    for(int i = 0; i < (ideaVector.size() < 3 ? ideaVector.size() : 3); i++){
+        outFile << i+1 << ". " << ideaVector[i].message.message << std::endl;
+    }
+
+    outFile.close();
+    QMessageBox::information(this, "Success", "Data has been successfuly saved to the file.");
+}
+
+
 void MainWindow::on_homeButton_clicked()
 {
     printf("BUTTON homeButton CLICKED\n");
@@ -647,3 +681,4 @@ void MainWindow::OutputPodium()
         qDebug() << "podium set: " << i;
     }
 }
+

@@ -629,7 +629,7 @@ DWORD WINAPI sendMessages(LPVOID param) {
             sendOneMessage(*clients, "TS");
             closeAllReceive(*clients, mutexClients);
 
-            ideaVector.clear();
+            // ideaVector.clear();
             clients->clear();
             TID = 0;
             UID = 0;
