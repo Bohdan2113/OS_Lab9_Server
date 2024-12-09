@@ -33,7 +33,7 @@
 #define SEND_MESS_FAIL 1
 #define RESV_MESS_FAIL 1
 
-#define RERANK_TIME 1000
+#define RERANK_TIME 500
 #define SLEEP_TIME 500
 
 typedef struct clnt {
