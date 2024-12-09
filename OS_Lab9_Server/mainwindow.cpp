@@ -15,7 +15,7 @@ using namespace std;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-    qDebug() << "Create UI";
+    std::cout << "CONSTRUCTOR STARTED\n";
     ui->setupUi(this);
     ui->stackedWidget->setCurrentWidget(ui->homePage);
 
@@ -54,22 +54,16 @@ MainWindow::MainWindow(QWidget *parent)
         } while (false);
 
         if (iResult) {
-            // printf("CreateMutex failed with error: %d\n", GetLastError());
+            printf("CreateMutex failed with error: %d\n", (int)GetLastError());
             break;
         }
 
         WSADATA wsaData;
-
-
         struct addrinfo hints;
 
-        char recvBuf[DEFAULT_BUFLEN];
-        int  recvBufLen = DEFAULT_BUFLEN;
-
-        // Initialize Winsock
         iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
         if (iResult != 0) {
-            // printf("WSAStartup failed with error: %d\n", iResult);
+            printf("WSAStartup failed with error: %d\n", iResult);
             break;
         }
 
@@ -79,16 +73,12 @@ MainWindow::MainWindow(QWidget *parent)
         hints.ai_protocol = IPPROTO_TCP;
         hints.ai_flags = AI_PASSIVE;
 
-        // Resolve the server address and port
         iResult = getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
         if (iResult != 0) {
-            // printf("getaddrinfo failed with error: %d\n", iResult);
+            printf("getaddrinfo failed with error: %d\n", iResult);
             WSACleanup();
             break;
         }
-
-        // printf("Enter \"RS\" to start:\n");
-
 
         DWORD threadID_send;
         HANDLE sendThread = CreateThread(
@@ -99,6 +89,12 @@ MainWindow::MainWindow(QWidget *parent)
             0,
             &threadID_send
             );
+
+        if (sendThread == NULL) {
+            printf("Error creating sendThread\n");
+            break;
+        }
+
         DWORD threadID_servent;
         HANDLE serventThread = CreateThread(
             NULL,
@@ -109,18 +105,26 @@ MainWindow::MainWindow(QWidget *parent)
             &threadID_servent
             );
 
+        if (serventThread == NULL) {
+            printf("Error creating serventThread\n");
+            break;
+        }
+
     } while (0);
+
+    std::cout << "CONSTRUCTOR ENDED\n";
 }
 
 MainWindow::~MainWindow()
 {
+    std::cout << "\nDESSTRUCTOR STARTED\n";
     WSACleanup();
     CloseHandle(mutexUI);
     CloseHandle(mutexClients);
     CloseHandle(mutexRecvMsg);
     CloseHandle(mutexSendMsg);
     CloseHandle(mutexIdeas);
-
+    std::cout << "\nDESSTRUCTOR ENDED\n";
     delete ui;
 }
 
@@ -133,7 +137,7 @@ int prevIdeasCount = 0;
 void MainWindow::updateClientsTable() {
 
     WaitForSingleObject(mutexClients, INFINITY);
-    int clientsCount = clients.size();
+    int clientsCount = (int)clients.size();
     if (clientsCount > prevClientsCount) {
         for (int i = prevClientsCount; i < clientsCount; i++) {
             AddUserInTable(ui->hamstersPage, clients[i].name);
@@ -146,7 +150,7 @@ void MainWindow::updateClientsTable() {
 void MainWindow::updateIdeasTable() {
 
     WaitForSingleObject(mutexIdeas, INFINITY);
-    int ideasCount = ideaVector.size();
+    int ideasCount = (int)ideaVector.size();
     if (ideasCount > prevIdeasCount) {
         for (int i = prevIdeasCount; i < ideasCount; i++) {
             AddIdea(ideaVector[i].message.message, ideaVector[i].ideaTID);
@@ -158,15 +162,13 @@ void MainWindow::updateIdeasTable() {
 
 void MainWindow::updateVoteTable()
 {
-    // Перевіряємо, чи кількість рядків у таблиці відповідає розміру ideaVector
     if (ui->voteTableWidget->rowCount() != static_cast<int>(ideaVector.size())) {
-        qWarning() << "Mismatch between table rows and ideaVector size.";
+        qWarning() << "Mismatch between table rows and ideaVector size.\n"
+                   << ui->voteTableWidget->rowCount() << " != " << ideaVector.size();
         return;
     }
 
-    // Оновлюємо дані у кожному рядку таблиці
     for (int i = 0; i < ideaVector.size(); ++i) {
-        // Оновлюємо колонку з ідеєю
         QTableWidgetItem* ideaItem = ui->voteTableWidget->item(i, 0);
         if (ideaItem) {
             ideaItem->setText(QString::fromStdString(ideaVector[i].message.message));
@@ -174,7 +176,6 @@ void MainWindow::updateVoteTable()
             qWarning() << "Missing item in column 0 at row" << i;
         }
 
-        // Оновлюємо колонку з кількістю голосів
         QTableWidgetItem* voteCountItem = ui->voteTableWidget->item(i, 1);
         if (voteCountItem) {
             voteCountItem->setText(QString::number(ideaVector[i].cntVoice));
@@ -184,9 +185,9 @@ void MainWindow::updateVoteTable()
     }
 }
 
-// Buttons
 void MainWindow::on_createRoomButton_clicked()
 {
+    printf("BUTTON createRoom CLICKED\n");
     QLineEdit* lineEdit = ui->topicLineEdit;
     QLabel* errorLabel = ui->errorLabel;
 
@@ -206,43 +207,47 @@ void MainWindow::on_createRoomButton_clicked()
         errorLabel->setText("Enter name of the topic");
 
         return;
-    } else {
-        lineEdit->setStyleSheet(
-            "QLineEdit { "
-            "color: rgb(0, 0, 0); "
-            "width: 150px; "
-            "height: 50px; "
-            "background: transparent; "
-            "background-color: rgb(255, 255, 255, 0.7); "
-            "}"
-            );
-        errorLabel->setStyleSheet("QLabel { color: black; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
-        errorLabel->setText("");
-
-        QTime time = ui->setTimeEdit->time();
-        int minutes = time.minute();
-        int seconds = time.second();
-
-        sessionTimeSec = minutes * 60 + seconds;
-        sessionTopic=lineEdit->text().toStdString();
-
-        lineEdit->setText(" ");
-
-        updateTimer = new QTimer(this);
-        connect(updateTimer, &QTimer::timeout, this, &MainWindow::updateClientsTable);
-        updateTimer->start(1000);
     }
 
+    lineEdit->setStyleSheet(
+        "QLineEdit { "
+        "color: rgb(0, 0, 0); "
+        "width: 150px; "
+        "height: 50px; "
+        "background: transparent; "
+        "background-color: rgb(255, 255, 255, 0.7); "
+        "}"
+        );
+    errorLabel->setStyleSheet("QLabel { color: black; background: transparent;  font-size: 15px;  height: 15px; width: 150px; }");
+    errorLabel->setText("");
+
+    QTime time = ui->setTimeEdit->time();
+    int minutes = time.minute();
+    int seconds = time.second();
+
+    sessionTimeSec = minutes * 60 + seconds;
+    sessionTopic=lineEdit->text().toStdString();
+
+    lineEdit->setText(" ");
+
+    updateTimer = new QTimer(this);
+    connect(updateTimer, &QTimer::timeout, this, &MainWindow::updateClientsTable);
+    updateTimer->start(1000);
+
+    printf("Push message: RS\n");
     WaitForSingleObject(mutexSendMsg, INFINITE);
     sendMessageQueue.push("RS");
     ReleaseMutex(mutexSendMsg);
 
     ui->stackedWidget->setCurrentWidget(ui->hamstersPage);
 
+    printf("BUTTON createRoom UNCLICKED\n");
 }
 
 void MainWindow::on_startSessionPushButton_clicked()
 {
+    printf("BUTTON startSession CLICKED\n");
+
     prevClientsCount = 0;
     updateTimer->stop();
 
@@ -253,35 +258,36 @@ void MainWindow::on_startSessionPushButton_clicked()
 
     ui->stackedWidget->setCurrentWidget(ui->createIdeaPage);
 
+    printf("Push message: SS\n");
     WaitForSingleObject(mutexSendMsg, INFINITE);
     sendMessageQueue.push("SS");
     ReleaseMutex(mutexSendMsg);
+
+    printf("BUTTON startSession UNCLICKED\n");
 }
 
 void MainWindow::on_EndSessionButton_clicked()
 {
+    printf("BUTTON EndSession CLICKED\n");
+
     prevIdeasCount = 0;
     updateTimer->stop();
 
+    printf("Push message: ES\n");
     WaitForSingleObject(mutexSendMsg, INFINITE);
     sendMessageQueue.push("ES");
     ReleaseMutex(mutexSendMsg);
 
-    // ui->stackedWidget->setCurrentWidget(ui->votePage);
-    // ui->topicNameLabel->setText(this->topicName);
-
+    printf("BUTTON EndSession UNCLICKED\n");
 }
 
 void MainWindow::on_homeButton_clicked()
 {
-    ui->EndSessionButton->setEnabled(true); // Увімкнути кнопку
+    printf("BUTTON homeButton CLICKED\n");
+    ui->EndSessionButton->setEnabled(true);
 
     ui->stackedWidget->setCurrentWidget(ui->homePage);
     this->topicName="";
-
-    WaitForSingleObject(mutexSendMsg, INFINITE);
-    sendMessageQueue.push("RS");
-    ReleaseMutex(mutexSendMsg);
 
     int rowCount = ui->voteTable->rowCount();
     for (int i = rowCount - 1; i >= 0; --i) {
@@ -297,6 +303,7 @@ void MainWindow::on_homeButton_clicked()
     for (int i = rowCount - 1; i >= 0; --i) {
         ui->voteTableWidget->removeRow(i);
     }
+    printf("BUTTON homeButton UNCLICKED\n");
 }
 
 
@@ -340,25 +347,28 @@ void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
     int minutes = 0;
     int seconds = 0;
 
-    static QTimer* progStageTimer = nullptr; // Таймер для перевірки progStage
-    static QTimer* progStageTimer2 = nullptr; // Таймер для перевірки progStage
+    static QTimer* progStageTimer = nullptr;
+    static QTimer* progStageTimer2 = nullptr;
 
     switch (pageIndex)
     {
-    case 0: break;
+    case 0:
+        printf("UI Case 0: enter\n");
+        break;
     case 1:
+       printf("UI Case 1: enter\n");
         break;
     case 2:
+        printf("UI Case 2: enter\n");
         minutes = sessionTimeSec / 60;
         seconds = sessionTimeSec % 60;
 
-        timer = new CountdownTimer(minutes, seconds, ui->timerCrIdeaLabel, [this]() {
+        timer = new CountdownTimer(minutes, seconds, ui->timerCrIdeaLabel, []() {
             WaitForSingleObject(mutexSendMsg, INFINITE);
             sendMessageQueue.push("ES");
             ReleaseMutex(mutexSendMsg);
         });
 
-        // Створюємо новий таймер
         progStageTimer = new QTimer(this);
         connect(progStageTimer, &QTimer::timeout, [this]() {
             if (progStage == "ES") {
@@ -369,26 +379,15 @@ void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
             if (progStage == "SV") {
                 progStage = "DS";
 
-                WaitForSingleObject(mutexSendMsg, INFINITE);
-                sendMessageQueue.push("SV");
-                ReleaseMutex(mutexSendMsg);
+                ui->voteTableWidget->setRowCount((int)ideaVector.size());
 
-
-
-
-
-                ui->voteTableWidget->setRowCount(ideaVector.size());
-
-                printf("ideaVector.size() = %d\n", ideaVector.size());
-                // Перебираємо всі ідеї у векторі
+                printf("ideaVector.size() = %d\n", (int)ideaVector.size());
                 for (int i = 0; i < ideaVector.size(); i++) {
 
-                    // Створюємо елемент для ідеї
                     QTableWidgetItem* ideaItem = new QTableWidgetItem(QString::fromStdString(ideaVector[i].message.message));
                     // ideaItem->setFont(QFont("Arial", 16)); // Форматування тексту
                     ui->voteTableWidget->setItem(i, 0, ideaItem);
 
-                    // Створюємо елемент для кількості голосів
                     QTableWidgetItem* voteCountItem = new QTableWidgetItem(QString::number(ideaVector[i].cntVoice));
                     voteCountItem->setTextAlignment(Qt::AlignCenter); // Вирівнювання по центру
                     ui->voteTableWidget->setItem(i, 1, voteCountItem);
@@ -402,31 +401,23 @@ void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
                 updateTimer->start(1000);
                 ui->stackedWidget->setCurrentWidget(ui->votePage);
 
-
-
-
-
-
                 progStageTimer->stop();
                 progStageTimer->deleteLater();
                 progStageTimer = nullptr;
             }
         });
-
-        progStageTimer->start(100); // Перевірка кожні 100 мс
+        progStageTimer->start(100);
 
         break;
     case 3:
-        printf("case 3: enter\n");
+        printf("UI Case 3: enter\n");
         delete timer;
         timer = nullptr;
 
-        timer = new CountdownTimer(1, 0, ui->timeVoteLabel, [this]() {
+        timer = new CountdownTimer(1, 0, ui->timeVoteLabel, []() {
             timerOut = true;
         });
 
-        printf("case 3: progStageTimer2 before\n");
-        // Створюємо новий таймер
         progStageTimer2 = new QTimer(this);
         if (!progStageTimer2) {
             printf("Failed to create progStageTimer2\n");
@@ -434,9 +425,6 @@ void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
         }
 
         if (!connect(progStageTimer2, &QTimer::timeout, this, [this]() {
-                printf("case 3: Timeout triggered\n");
-                printf("case 3: Cur progStage = ");
-                std::cout << progStage << "\n";
                 if (progStage == "EV") {
                     progStage = "DS";
                     ui->stackedWidget->setCurrentWidget(ui->podiumPage);
@@ -449,12 +437,12 @@ void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
             printf("Failed to connect timeout signal\n");
             return;
         }
-        printf("case 3: progStageTimer2 after\n");
 
-        progStageTimer2->start(500); // Перевірка кожні 100 мс
+        progStageTimer2->start(500);
 
         break;
     case 4:
+        printf("UI Case 3: enter\n");
         delete timer;
         timer = nullptr;
 
@@ -466,8 +454,6 @@ void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
     }
 }
 
-
-// Додавання 1 нового користувача в табличку на hamstersTableWidget
 bool MainWindow::AddUserInTable(QWidget* page, std::string sUserName){
 
     QTableWidget* table = page->findChild<QTableWidget*>("hamstersTableWidget");
@@ -503,6 +489,7 @@ bool MainWindow::AddUserInTable(QWidget* page, std::string sUserName){
         if (reply == QMessageBox::Yes) {
             WaitForSingleObject(mutexClients, INFINITY);
             table->removeRow(iRowIndex);
+            printf("Trying to kick Client #%d\n", clients[iRowIndex].clientUID);
             closeClientWithUID(clients, clients[iRowIndex].clientUID);
             ReleaseMutex(mutexClients);
 
@@ -586,17 +573,14 @@ void MainWindow::AddIdea(string sIdea, int TID)
     // layout->addWidget(button);
 
 
-    // Додаємо новий рядок у таблицю
     int newRow = ui->voteTable->rowCount();
     ui->voteTable->insertRow(newRow);
 
-    // Додаємо текст ідеї в першу колонку
     QTableWidgetItem* ideaItem = new QTableWidgetItem(QString::fromStdString(sIdea));
     ideaItem->setData(Qt::UserRole, TID); // Зберігаємо ID ідеї
     ideaItem->setFont(QFont("Arial", 16)); // Приклад форматування
     ui->voteTable->setItem(newRow, 0, ideaItem);
 
-    // Створюємо кнопку для видалення і додаємо її у другу колонку
     QPushButton* deleteButton = new QPushButton("Delete", ui->voteTable);
     deleteButton->setFixedSize(100, 30);
     ui->voteTable->setCellWidget(newRow, 1, deleteButton);

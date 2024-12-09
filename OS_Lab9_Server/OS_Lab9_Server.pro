@@ -12,7 +12,7 @@ SOURCES += \
     countdowntimer.cpp \
     main.cpp \
     mainwindow.cpp \
-    # server.cpp
+    server.cpp
 
 HEADERS += \
     countdowntimer.h \
