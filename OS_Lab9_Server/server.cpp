@@ -123,6 +123,7 @@ DWORD WINAPI rankIdeas(LPVOID param)
                 return a.cntVoice > b.cntVoice;
             });
             ReleaseMutex(mutexIdeas);
+            isVoted = false;
         }
         Sleep(RERANK_TIME);
     }
@@ -359,33 +360,50 @@ void closeOneReceive(std::vector<Client>& clients, int i) {
     } else {
         printf("GetExitCodeThread client #%d failed with error code: %d\n", client.clientUID, (int)GetLastError());
     }
-    TerminateThread(client.threadHandle, 0);
+
+
+    // if (GetExitCodeThread(client.threadHandle, &exitCodeThread)) {
+    //     if (exitCodeThread == STILL_ACTIVE) {
+    //         std::cout << "Trying to terminate TerminateThread...\n";
+    //         TerminateThread(client.threadHandle, 0);
+    //         std::cout << "Thread terminated\n";
+    //     }
+    //     else {
+    //         std::cout << "Thread is not alive\n";
+    //     }
+    // }
+
     delFromVector(clients,i);
 
     return;
 }
 
 void delFromVector(std::vector<Client>& clients, int i) {
+    std::cout << "Trying to delete from vector...\n";
     CloseHandle(clients[i].threadHandle);
-
+    std::cout << "CloseHandle done\n";
     shutdown(clients[i].clientSocket, SD_BOTH);
+    std::cout << "shutdown done\n";
     closesocket(clients[i].clientSocket);
+    std::cout << "closesocket done\n";
 
-    printf("Client #%d deleted from vector\n", clients[i].clientUID);
+    printf("Client deleted from vector\n");
     clients.erase(clients.begin() + i);
 }
 
 void closeClientWithUID(std::vector<Client>& clients, int UID) {
     bool isFound = false;
-    WaitForSingleObject(mutexClients, INFINITY);
+
     for (int i = 0; i < clients.size(); i++) {
         if (clients[i].clientUID == UID) {
+            printf("Client #%d found to delete.\n", UID);
             isFound = true;
             closeOneReceive(clients, i);
+            printf("Client #%d closeOneReceive done.\n", UID);
             break;
         }
     }
-    ReleaseMutex(mutexClients);
+
     if (!isFound) {
         printf("Error deleting Client #%d. Unknown UID\n", UID);
     }

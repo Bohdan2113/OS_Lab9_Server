@@ -147,7 +147,16 @@ void MainWindow::updateClientsTable() {
     int clientsCount = (int)clients.size();
     if (clientsCount > prevClientsCount) {
         for (int i = prevClientsCount; i < clientsCount; i++) {
+            if (std::string(clients[i].name) == "unknown") {
+                std::cout << "Error trying to add unknown user.\nTrying again\n";
+                ReleaseMutex(mutexClients);
+                Sleep(200);
+                WaitForSingleObject(mutexClients, INFINITY);
+                i--;
+                continue;
+            }
             AddUserInTable(ui->hamstersPage, clients[i].name);
+            std::cout << "User with name: " << clients[i].name << " added to the table\n";
         }
     }
     prevClientsCount = clientsCount;
@@ -169,6 +178,7 @@ void MainWindow::updateIdeasTable() {
 
 void MainWindow::updateVoteTable()
 {
+    if (isVoted == true) return;
     if (ui->voteTableWidget->rowCount() != static_cast<int>(ideaVector.size())) {
         qWarning() << "Mismatch between table rows and ideaVector size.\n"
                    << ui->voteTableWidget->rowCount() << " != " << ideaVector.size();
@@ -416,7 +426,7 @@ void MainWindow::on_stackedWidget_currentChanged(int pageIndex)
                 disconnect(updateTimer, &QTimer::timeout, this, &MainWindow::updateIdeasTable);
                 connect(updateTimer, &QTimer::timeout, this, &MainWindow::updateVoteTable);
 
-                updateTimer->start(1000);
+                updateTimer->start(250);
                 ui->stackedWidget->setCurrentWidget(ui->votePage);
 
                 progStageTimer->stop();
@@ -518,8 +528,11 @@ bool MainWindow::AddUserInTable(QWidget* page, std::string sUserName){
             QMessageBox::Yes | QMessageBox::No);
 
         if (reply == QMessageBox::Yes) {
+            std::cout << "Trying to remove user in row #" << iRowIndex << " .\n";
+            std::cout << "Old user count: " << clients.size() << "\n";
             WaitForSingleObject(mutexClients, INFINITY);
 
+<<<<<<< HEAD
             if (rowIndex < clients.size()) { // Перевіряємо, чи індекс в межах масиву
                 printf("Trying to kick Client #%d\n", clients[rowIndex].clientUID);
                 closeClientWithUID(clients, clients[rowIndex].clientUID);
@@ -527,6 +540,17 @@ bool MainWindow::AddUserInTable(QWidget* page, std::string sUserName){
 
             table->removeRow(rowIndex);
 
+=======
+            std::cout << "Trying to kick User #" <<  clients[iRowIndex].clientUID << "\n";
+            closeClientWithUID(clients, clients[iRowIndex].clientUID);
+            std::cout << "Client kicked.\n";
+
+            std::cout << "Trying to remove user row #" << iRowIndex << ".\n";
+            table->removeRow(iRowIndex);
+            std::cout << "User row #" << iRowIndex << " removed.\n";
+
+            std::cout << "New user count: " << clients.size() << "\n";
+>>>>>>> e2095a093b7bd195371b1688444c36dd243e80e5
             ReleaseMutex(mutexClients);
 
             qDebug() << "User row removed";
